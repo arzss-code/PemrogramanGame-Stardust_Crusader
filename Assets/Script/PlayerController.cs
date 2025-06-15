@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     public float boostSpeed = 12f;
@@ -21,7 +23,20 @@ public class PlayerController : MonoBehaviour
     private float lastVertical = 0f;
     private bool wasMovingVertically = false;
     private bool isBoosting = false;
-
+    private bool boostExhausted = false;
+    public static PlayerController instance;  // Tambahkan ini di atas
+    public float BoostMultiplier => isBoosting ? (boostSpeed / moveSpeed) : 1f;  // Tambahkan getter ini
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Jika sudah ada instance lain, hancurkan yang ini
+        }
+    }
     private void Start()
     {
         anim = GetComponent<Animator>();
@@ -41,7 +56,7 @@ public class PlayerController : MonoBehaviour
         HandleBoosting();
         MovePlayer();
         UpdateAnimator();
-        ClampToScreen();
+        //ClampToScreen();
         UpdateEnergyUI();
     }
 
@@ -54,8 +69,14 @@ public class PlayerController : MonoBehaviour
 
     private void HandleBoosting()
     {
-        // Klik kanan untuk boost otomatis maju ke kanan
-        if (Input.GetMouseButton(1) && energy > 0f)
+        // Cek jika energy habis sebelumnya dan tombol sudah dilepas
+        if (boostExhausted && !Input.GetMouseButton(1))
+        {
+            boostExhausted = false; // Reset agar bisa boosting lagi
+        }
+
+        // Jika boost tidak kelelahan dan klik kanan ditekan
+        if (Input.GetMouseButton(1) && energy > 0f && !boostExhausted)
         {
             isBoosting = true;
             energy -= boostEnergyDrain * Time.deltaTime;
@@ -63,6 +84,15 @@ public class PlayerController : MonoBehaviour
 
             if (boostEffect != null && !boostEffect.isPlaying)
                 boostEffect.Play();
+
+            if (energy == 0f)
+            {
+                isBoosting = false;
+                boostExhausted = true;
+
+                if (boostEffect != null && boostEffect.isPlaying)
+                    boostEffect.Stop();
+            }
         }
         else
         {
@@ -76,17 +106,21 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        float vertical = Input.GetAxisRaw("Vertical");
-        float moveY = vertical;
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
 
-        // Saat boosting, paksa maju ke kanan
-        float moveX = isBoosting ? 1f : Input.GetAxisRaw("Horizontal");
+        // Jika Boost aktif, tetap izinkan gerakan player manual, tapi tidak paksa gerak ke kanan
+        if (isBoosting)
+        {
+            moveY *= 0.3f;  // Kalau kamu masih mau mengurangi gerakan vertikal saat boost
+        }
 
         Vector3 movement = new Vector3(moveX, moveY, 0f).normalized;
-        float speed = isBoosting ? boostSpeed : moveSpeed;
+        float speed = moveSpeed; // Boost tidak meningkatkan kecepatan player
 
         transform.position += movement * speed * Time.deltaTime;
     }
+
 
     private void UpdateAnimator()
     {
@@ -108,13 +142,13 @@ public class PlayerController : MonoBehaviour
         lastVertical = vertical;
     }
 
-    private void ClampToScreen()
-    {
-        Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-        pos.x = Mathf.Clamp01(pos.x);
-        pos.y = Mathf.Clamp01(pos.y);
-        transform.position = Camera.main.ViewportToWorldPoint(pos);
-    }
+    //private void ClampToScreen()
+    //{
+    //    Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+     //   pos.x = Mathf.Clamp01(pos.x);
+    //    pos.y = Mathf.Clamp01(pos.y);
+    //    transform.position = Camera.main.ViewportToWorldPoint(pos);
+    //}
 
     private void UpdateEnergyUI()
     {
