@@ -1,8 +1,9 @@
+﻿using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    public static PlayerController instance;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -14,8 +15,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float energyRegen = 10f;
     [SerializeField] private float boostEnergyDrain = 20f;
 
+    [Header("Health")]
+    [SerializeField] private int health = 5;
+    [SerializeField] private int maxHealth = 5;
+
     [Header("Effects")]
-    public ParticleSystem boostEffect; // Assign via Inspector
+    public ParticleSystem boostEffect;
 
     private Animator anim;
     private Rigidbody2D rb;
@@ -24,27 +29,30 @@ public class PlayerController : MonoBehaviour
     private bool wasMovingVertically = false;
     private bool isBoosting = false;
     private bool boostExhausted = false;
-    public static PlayerController instance;  // Tambahkan ini di atas
-    public float BoostMultiplier => isBoosting ? (boostSpeed / moveSpeed) : 1f;  // Tambahkan getter ini
+    private SpriteRenderer spriteRenderer;
+    private Material defaultMaterial;
+    [SerializeField] private Material whiteMaterial;
+
+    public float BoostMultiplier => isBoosting ? (boostSpeed / moveSpeed) : 1f;
+
     private void Awake()
     {
         if (instance == null)
-        {
             instance = this;
-        }
         else
-        {
-            Destroy(gameObject); // Jika sudah ada instance lain, hancurkan yang ini
-        }
+            Destroy(gameObject);
     }
+
     private void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        defaultMaterial = spriteRenderer.material;
         energy = maxEnergy;
 
-        // Inisialisasi Energy UI
         UIController.instance?.SetMaxEnergy(maxEnergy);
+        UIController.instance?.SetMaxHealth(maxHealth);
 
         if (boostEffect != null)
             boostEffect.Stop();
@@ -54,9 +62,9 @@ public class PlayerController : MonoBehaviour
     {
         HandleInput();
         HandleBoosting();
+        HandleShooting();
         MovePlayer();
         UpdateAnimator();
-        //ClampToScreen();
         UpdateEnergyUI();
     }
 
@@ -69,13 +77,9 @@ public class PlayerController : MonoBehaviour
 
     private void HandleBoosting()
     {
-        // Cek jika energy habis sebelumnya dan tombol sudah dilepas
         if (boostExhausted && !Input.GetMouseButton(1))
-        {
-            boostExhausted = false; // Reset agar bisa boosting lagi
-        }
+            boostExhausted = false;
 
-        // Jika boost tidak kelelahan dan klik kanan ditekan
         if (Input.GetMouseButton(1) && energy > 0f && !boostExhausted)
         {
             isBoosting = true;
@@ -104,27 +108,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void MovePlayer()
+    private void HandleShooting()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-
-        // Jika Boost aktif, tetap izinkan gerakan player manual, tapi tidak paksa gerak ke kanan
-        if (isBoosting)
+        if (Input.GetMouseButtonDown(0))
         {
-            moveY *= 0.3f;  // Kalau kamu masih mau mengurangi gerakan vertikal saat boost
+            LaserWeapon.Instance.Shoot();
         }
 
-        Vector3 movement = new Vector3(moveX, moveY, 0f).normalized;
-        float speed = moveSpeed; // Boost tidak meningkatkan kecepatan player
-
-        transform.position += movement * speed * Time.deltaTime;
     }
 
 
+
+    private void MovePlayer()
+    {
+        float verticalReduction = isBoosting ? 0.3f : 1f;
+        Vector3 movement = new Vector3(moveInput.x, moveInput.y * verticalReduction, 0f).normalized;
+
+        float speed = moveSpeed;
+        transform.position += movement * speed * Time.deltaTime;
+    }
+
     private void UpdateAnimator()
     {
-        float vertical = Input.GetAxisRaw("Vertical");
+        float vertical = moveInput.y;
 
         anim.SetFloat("Vertical", vertical);
 
@@ -142,16 +148,36 @@ public class PlayerController : MonoBehaviour
         lastVertical = vertical;
     }
 
-    //private void ClampToScreen()
-    //{
-    //    Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-     //   pos.x = Mathf.Clamp01(pos.x);
-    //    pos.y = Mathf.Clamp01(pos.y);
-    //    transform.position = Camera.main.ViewportToWorldPoint(pos);
-    //}
-
     private void UpdateEnergyUI()
     {
         UIController.instance?.SetEnergy(energy);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!collision.gameObject.CompareTag("obstacle")) return;
+
+        TakeDamage(1);
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        health = Mathf.Clamp(health, 0, maxHealth);
+        UIController.instance?.SetHealth(health);
+        spriteRenderer.material = whiteMaterial;
+        StartCoroutine("ResetMaterial");
+
+        if (health <= 0)
+        {
+            // TODO: Trigger death, game over, animation, etc.
+            Debug.Log("Player Dead");
+        }
+    }
+
+    IEnumerator ResetMaterial()
+    {
+        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.material = defaultMaterial;
     }
 }

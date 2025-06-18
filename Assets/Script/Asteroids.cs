@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -6,6 +7,8 @@ public class Asteroids : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
 
+    private Material defaultMaterial;
+    [SerializeField] private Material whiteMaterial;
     [SerializeField] private Sprite[] sprites;
     [SerializeField] private float naturalDriftY = 0.5f; // Gerakan Y alami
     [SerializeField] private float rotationTorque = 30f;
@@ -14,6 +17,7 @@ public class Asteroids : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        defaultMaterial = spriteRenderer.material;
 
         // Random sprite
         spriteRenderer.sprite = sprites[Random.Range(0, sprites.Length)];
@@ -40,5 +44,20 @@ public class Asteroids : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.
+            CompareTag("bullet"))
+        {
+            spriteRenderer.material = whiteMaterial;
+            StartCoroutine("ResetMaterial");
+        }
+    }
+    IEnumerator ResetMaterial()
+    {
+        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.material = defaultMaterial;
     }
 }

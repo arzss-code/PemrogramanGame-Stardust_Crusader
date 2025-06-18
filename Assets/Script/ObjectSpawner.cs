@@ -8,9 +8,13 @@ public class ObjectSpawner : MonoBehaviour
 
     private float spawnTimer;
 
+    
+
+    [SerializeField] private Transform spawn1;  // Posisi atas/titik awal Y
+    [SerializeField] private Transform spawn2;  // Posisi bawah/titik akhir Y
+
     private void Update()
     {
-        // Tidak spawn jika prefab belum diset
         if (prefab == null) return;
 
         spawnTimer += Time.deltaTime;
@@ -24,6 +28,13 @@ public class ObjectSpawner : MonoBehaviour
 
     private void SpawnObject()
     {
-        Instantiate(prefab, transform.position, transform.rotation);
+        Vector2 spawnPosition = RandomSpawnPoint();
+        Instantiate(prefab, spawnPosition, Quaternion.identity);
+    }
+
+    private Vector2 RandomSpawnPoint()
+    {
+        float randomY = Random.Range(spawn1.position.y, spawn2.position.y);
+        return new Vector2(spawn1.position.x, randomY);  // X tetap, Y acak
     }
 }
