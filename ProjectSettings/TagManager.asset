@@ -6,17 +6,19 @@ TagManager:
   tags:
   - Planeta
   - WorldObject
+  - obstacle
+  - bullet
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - player
   - Water
   - UI
   - Effect
   - Boundaries
   - Obstacle
-  - 
+  - bullet
   - 
   - 
   - 
