@@ -6,9 +6,19 @@ public class PlayerController : MonoBehaviour
     // Singleton instance untuk akses mudah dari script lain
     public static PlayerController instance;
 
+    // Enum untuk memilih skema kontrol di Inspector Unity
+    public enum ControlScheme { Keyboard, Mouse }
+    [Header("Control Settings")]
+    public ControlScheme currentScheme = ControlScheme.Keyboard;
+
     [Header("Movement")]
     public float moveSpeed = 5f; // Kecepatan gerak normal pemain
     public float boostSpeed = 12f; // Kecepatan gerak saat boost
+    public float stoppingDistance = 0.1f;
+
+    [Header("Shooting")]
+    public float fireRate = 5f; // Tembakan per detik
+    private float nextFireTime = 0f;
 
     [Header("Energy")]
     [SerializeField] private float energy; // Energi saat ini
@@ -66,21 +76,50 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Panggil fungsi-fungsi untuk menangani berbagai aspek pemain
-        HandleInput();
+        // Memilih logika berdasarkan skema kontrol yang aktif
+        switch (currentScheme)
+        {
+            case ControlScheme.Keyboard:
+                HandleKeyboardMovement();
+                break;
+            case ControlScheme.Mouse:
+                HandleMouseMovement();
+                break;
+        }
+
         HandleBoosting();
         HandleShooting();
-        MovePlayer();
         UpdateAnimator();
         UpdateEnergyUI();
     }
 
-    private void HandleInput()
+    // Logika untuk kontrol Keyboard
+    private void HandleKeyboardMovement()
     {
         // Ambil input horizontal dan vertikal
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(horizontal, vertical).normalized;
+
+        float currentMoveSpeed = isBoosting ? boostSpeed : moveSpeed;
+        rb.linearVelocity = moveInput * currentMoveSpeed;
+    }
+
+    // Logika untuk kontrol Mouse
+    private void HandleMouseMovement()
+    {
+        // Mendapatkan posisi mouse di dunia game
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        // Menghitung arah dari pemain ke mouse
+        Vector2 direction = (mousePosition - (Vector2)transform.position).normalized;
+
+        // Menggerakkan pemain ke arah mouse
+        float currentMoveSpeed = isBoosting ? boostSpeed : moveSpeed;
+        rb.linearVelocity = direction * currentMoveSpeed;
+
+        // Untuk keperluan animasi, kita anggap selalu bergerak maju jika mouse jauh
+        moveInput = direction;
     }
 
     private void HandleBoosting()
@@ -105,7 +144,6 @@ public class PlayerController : MonoBehaviour
             {
                 isBoosting = false;
                 boostExhausted = true;
-
                 if (boostEffect != null && boostEffect.isPlaying)
                     boostEffect.Stop();
             }
@@ -130,89 +168,79 @@ public class PlayerController : MonoBehaviour
         // Tembak selama tombol kiri mouse ditekan dan sudah melewati delay
         if (Input.GetMouseButton(0) && Time.time - lastShootTime >= shootDelay)
         {
+            // Set waktu tembakan berikutnya
+            nextFireTime = Time.time + 1f / fireRate;
             LaserWeapon.Instance.Shoot();
             lastShootTime = Time.time;
         }
     }
 
-    //! Gerakan keyboard (disimpan sebagai komentar)
-    // private void MovePlayer()
-    // {
-    //     // // Kurangi gerakan vertikal saat boost
-    //     // float verticalReduction = isBoosting ? 0.3f : 1f;
-    //     // Vector3 movement = new Vector3(moveInput.x, moveInput.y * verticalReduction, 0f).normalized;
-    //     // float speed = moveSpeed;
-    //     // // Pindahkan pemain
-    //     // transform.position += movement * speed * Time.deltaTime;
-    // }
-
-    //! Gerakan menggunakan sensor mouse (mengikuti posisi kursor)
-    private Vector3 lastMousePosition;
-    private float mouseSpeed;
-
-    private void MovePlayer()
-    {
-        // Hitung kecepatan gerak mouse
-        Vector3 currentMousePosition = Input.mousePosition;
-        if (lastMousePosition == Vector3.zero)
-            lastMousePosition = currentMousePosition;
-
-        // Hitung delta mouse dalam world space
-        Vector3 worldLastMouse = Camera.main.ScreenToWorldPoint(lastMousePosition);
-        Vector3 worldCurrentMouse = Camera.main.ScreenToWorldPoint(currentMousePosition);
-        worldLastMouse.z = 0f;
-        worldCurrentMouse.z = 0f;
-
-        Vector3 mouseDelta = worldCurrentMouse - worldLastMouse;
-        mouseSpeed = mouseDelta.magnitude / Time.deltaTime;
-
-        // Normalisasi kecepatan mouse agar tidak terlalu besar/kecil
-        float minSpeed = moveSpeed * 0.5f;
-        float maxSpeed = boostSpeed;
-        float mappedSpeed = Mathf.Clamp(mouseSpeed, minSpeed, maxSpeed);
-
-        // Arah gerak player mengikuti arah mouse bergerak
-        Vector3 direction = mouseDelta.normalized;
-
-        // Kurangi gerakan vertikal saat boost
-        float verticalReduction = isBoosting ? 0.3f : 1f;
-        direction = new Vector3(direction.x, direction.y * verticalReduction, 0f).normalized;
-
-        // Hanya bergerak jika mouse bergerak cukup jauh
-        if (mouseDelta.magnitude > 0.01f)
-        {
-            transform.position += direction * mappedSpeed * Time.deltaTime;
-            moveInput = direction; // Untuk animasi
-        }
-        else
-        {
-            moveInput = Vector2.zero; // Idle animasi
-        }
-
-        lastMousePosition = currentMousePosition;
-    }
+    // Hapus method MovePlayer() yang lama karena sudah digantikan
+    // private void MovePlayer() { ... }
 
     private void UpdateAnimator()
     {
-        float vertical = moveInput.y;
-
-        // Set parameter vertical di animator
-        anim.SetFloat("Vertical", vertical);
-
-        bool isMovingVertically = Mathf.Abs(vertical) > 0.01f;
-
-        // Atur animasi idle berdasarkan gerakan vertikal sebelumnya
-        if (wasMovingVertically && !isMovingVertically)
+        switch (currentScheme)
         {
-            if (lastVertical > 0)
-                anim.Play("Idle-from-up");
-            else if (lastVertical < 0)
-                anim.Play("Idle-from-down");
-        }
+            // LOGIKA ANIMASI UNTUK KEYBOARD (TETAP SAMA SEPERTI SEBELUMNYA)
+            case ControlScheme.Keyboard:
+                {
+                    float vertical = moveInput.y;
+                    anim.SetFloat("Vertical", vertical);
 
-        // Update status gerakan vertikal
-        wasMovingVertically = isMovingVertically;
-        lastVertical = vertical;
+                    bool isMovingVertically = Mathf.Abs(vertical) > 0.01f;
+
+                    if (wasMovingVertically && !isMovingVertically)
+                    {
+                        if (lastVertical > 0)
+                            anim.Play("Idle-from-up");
+                        else if (lastVertical < 0)
+                            anim.Play("Idle-from-down");
+                    }
+
+                    wasMovingVertically = isMovingVertically;
+                    if (isMovingVertically)
+                    {
+                        lastVertical = vertical;
+                    }
+                    break;
+                }
+
+            // LOGIKA ANIMASI BARU UNTUK MOUSE
+            case ControlScheme.Mouse:
+                {
+                    // Cek jarak antara pemain dan posisi kursor mouse
+                    float distanceToMouse = Vector2.Distance(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+                    // Jika jaraknya lebih besar dari stoppingDistance, berarti pemain sedang bergerak
+                    bool isMoving = distanceToMouse > stoppingDistance;
+
+                    if (isMoving)
+                    {
+                        // Atur float "Vertical" berdasarkan arah gerakan (moveInput.y)
+                        // Ini membuat kapal tetap terlihat miring ke atas/bawah saat bergerak dengan mouse
+                        anim.SetFloat("Vertical", moveInput.y);
+                    }
+
+                    // Jika sebelumnya bergerak dan sekarang berhenti (masuk dalam stoppingDistance)
+                    if (wasMovingVertically && !isMoving)
+                    {
+                        // Mainkan animasi idle yang sesuai berdasarkan arah gerakan terakhir
+                        if (lastVertical > 0)
+                            anim.Play("Idle-from-up");
+                        else if (lastVertical < 0)
+                            anim.Play("Idle-from-down");
+                    }
+
+                    // Perbarui status dan arah terakhir HANYA jika sedang bergerak
+                    wasMovingVertically = isMoving;
+                    if (isMoving)
+                    {
+                        lastVertical = moveInput.y;
+                    }
+                    break;
+                }
+        }
     }
 
     private void UpdateEnergyUI()
@@ -225,8 +253,6 @@ public class PlayerController : MonoBehaviour
     {
         // Cek tabrakan dengan obstacle
         if (!collision.gameObject.CompareTag("obstacle")) return;
-
-        // Ambil damage jika bertabrakan dengan obstacle
         TakeDamage(1);
     }
 
@@ -239,13 +265,13 @@ public class PlayerController : MonoBehaviour
 
         // Efek visual saat terkena damage
         spriteRenderer.material = whiteMaterial;
-        StartCoroutine("ResetMaterial");
+        StartCoroutine(ResetMaterial());
 
         // Cek apakah pemain mati
         if (health <= 0)
         {
-            // TODO: Trigger death, game over, animation, etc.
             Debug.Log("Player Dead");
+            // TODO: Trigger death, game over, animation, etc.
         }
     }
 
