@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 5735838487648037180}
   - component: {fileID: 8123398606447975702}
   - component: {fileID: 3742963659324009814}
-  - component: {fileID: 7622265840452357862}
   - component: {fileID: 423902716660859441}
+  - component: {fileID: 4613738927372455102}
   m_Layer: 8
-  m_Name: Asteroid
+  m_Name: Asteroid3
   m_TagString: obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.2, y: 12.3, z: 0}
-  m_LocalScale: {x: 2.39, y: 2.39, z: 2.39}
+  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 1779297347
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: -511954582, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
+  m_Sprite: {fileID: -2674403585074035621, guid: 9b208f3248bb36e42ae98e2cd14d1510, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -117,8 +117,28 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &7622265840452357862
-CircleCollider2D:
+--- !u!114 &423902716660859441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3207898793430442549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 164355b4180821849aa1fd2c991f7319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
+  sprites:
+  - {fileID: -7197702783637013416, guid: 00753ac0186a83a4b8006ee762c6bb5e, type: 3}
+  - {fileID: -2674403585074035621, guid: 9b208f3248bb36e42ae98e2cd14d1510, type: 3}
+  naturalDriftY: 10
+  rotationTorque: 120
+  destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
+  lives: 0
+--- !u!70 &4613738927372455102
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -151,28 +171,6 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.02916792}
-  m_Radius: 1.1697885
---- !u!114 &423902716660859441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3207898793430442549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 164355b4180821849aa1fd2c991f7319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
-  sprites:
-  - {fileID: -511954582, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 1757433252, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 756879195, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 1023856489, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 1598730767, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  naturalDriftY: 10
-  rotationTorque: 120
-  destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
-  lives: 5
+  m_Offset: {x: -0.04, y: 0}
+  m_Size: {x: 5.27, y: 6.53}
+  m_Direction: 0
