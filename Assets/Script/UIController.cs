@@ -4,24 +4,25 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    public static UIController instance;
+    public static UIController instance; // Instance singleton untuk akses global
 
     [Header("Energy UI")]
-    public Slider energySlider;
-    public TMP_Text energyText;
-    private float maxEnergy = 100f;
+    public Slider energySlider; // Slider untuk menampilkan energi
+    public TMP_Text energyText; // Teks untuk menampilkan nilai energi
+    private float maxEnergy = 100f; // Nilai maksimum energi
 
     [Header("Health UI")]
-    public Slider healthSlider;
-    public TMP_Text healthText;
-    private float maxHealth = 100f;
+    public Slider healthSlider; // Slider untuk menampilkan kesehatan
+    public TMP_Text healthText; // Teks untuk menampilkan nilai kesehatan
+    private float maxHealth = 100f; // Nilai maksimum kesehatan
 
     private void Awake()
     {
+        // Implementasi singleton
         if (instance == null)
-            instance = this;
+            instance = this; // Set instance jika belum ada
         else
-            Destroy(gameObject);
+            Destroy(gameObject); // Hancurkan objek jika instance sudah ada
     }
 
     // ================= ENERGY =================
@@ -31,15 +32,15 @@ public class UIController : MonoBehaviour
     /// </summary>
     public void SetMaxEnergy(float maxEnergy)
     {
-        this.maxEnergy = maxEnergy;
+        this.maxEnergy = maxEnergy; // Set nilai maksimum energi
 
         if (energySlider != null)
         {
-            energySlider.maxValue = maxEnergy;
-            energySlider.value = maxEnergy;
+            energySlider.maxValue = maxEnergy; // Set nilai maksimum slider
+            energySlider.value = maxEnergy; // Isi slider dengan nilai maksimum
         }
 
-        UpdateEnergyText(maxEnergy);
+        UpdateEnergyText(maxEnergy); // Perbarui teks energi
     }
 
     /// <summary>
@@ -49,10 +50,11 @@ public class UIController : MonoBehaviour
     {
         if (energySlider != null)
         {
+            // Set nilai slider dengan energi saat ini, dibatasi antara 0 dan maxEnergy
             energySlider.value = Mathf.Clamp(energy, 0f, maxEnergy);
         }
 
-        UpdateEnergyText(energy);
+        UpdateEnergyText(energy); // Perbarui teks energi
     }
 
     /// <summary>
@@ -62,6 +64,7 @@ public class UIController : MonoBehaviour
     {
         if (energyText != null)
         {
+            // Set teks energi dengan format "current / maxEnergy"
             energyText.text = $"{Mathf.FloorToInt(current)} / {Mathf.FloorToInt(maxEnergy)}";
         }
     }
@@ -73,15 +76,15 @@ public class UIController : MonoBehaviour
     /// </summary>
     public void SetMaxHealth(float maxHealth)
     {
-        this.maxHealth = maxHealth;
+        this.maxHealth = maxHealth; // Set nilai maksimum kesehatan
 
         if (healthSlider != null)
         {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = maxHealth;
+            healthSlider.maxValue = maxHealth; // Set nilai maksimum slider
+            healthSlider.value = maxHealth; // Isi slider dengan nilai maksimum
         }
 
-        UpdateHealthText(maxHealth);
+        UpdateHealthText(maxHealth); // Perbarui teks kesehatan
     }
 
     /// <summary>
@@ -91,10 +94,11 @@ public class UIController : MonoBehaviour
     {
         if (healthSlider != null)
         {
+            // Set nilai slider dengan kesehatan saat ini, dibatasi antara 0 dan maxHealth
             healthSlider.value = Mathf.Clamp(health, 0f, maxHealth);
         }
 
-        UpdateHealthText(health);
+        UpdateHealthText(health); // Perbarui teks kesehatan
     }
 
     /// <summary>
@@ -104,6 +108,7 @@ public class UIController : MonoBehaviour
     {
         if (healthText != null)
         {
+            // Set teks kesehatan dengan format "current / maxHealth"
             healthText.text = $"{Mathf.FloorToInt(current)} / {Mathf.FloorToInt(maxHealth)}";
         }
     }

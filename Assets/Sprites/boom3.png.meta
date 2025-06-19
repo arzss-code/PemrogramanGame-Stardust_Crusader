@@ -196,6 +196,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -872,7 +885,37 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      boom3_0: 3174005786208677409
+      boom3_1: -4956102137351896869
+      boom3_10: 2172498873493371245
+      boom3_11: -493043377973313856
+      boom3_12: -3313495635627745518
+      boom3_13: -934730671989705997
+      boom3_14: 7435273812705382994
+      boom3_15: -8658085323273174728
+      boom3_16: -340397455367383147
+      boom3_17: -5475404683177922187
+      boom3_18: -7903796611588256412
+      boom3_19: -3303905620557218103
+      boom3_2: 5185321260763336893
+      boom3_20: -6211263708429991999
+      boom3_21: -6955199826383547763
+      boom3_22: 3259442992979168646
+      boom3_23: -4583350119865315464
+      boom3_24: -6434777599587971104
+      boom3_25: 6207401148970137561
+      boom3_26: 163884638754277816
+      boom3_27: 3590495125222692425
+      boom3_28: -5118606471463057865
+      boom3_29: 6512133822599825397
+      boom3_3: -4545501095105644766
+      boom3_4: -8506884726238877911
+      boom3_5: -1778648481925108714
+      boom3_6: -7162600996219810806
+      boom3_7: 5064764605956879471
+      boom3_8: -1732089790582453173
+      boom3_9: -7708078393753708817
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
