@@ -174,3 +174,5 @@ MonoBehaviour:
   - {fileID: 1598730767, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
   naturalDriftY: 10
   rotationTorque: 120
+  destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
+  lives: 5

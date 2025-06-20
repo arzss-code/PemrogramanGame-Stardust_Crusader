@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxEnergy = 100f;
     [SerializeField] private float energyRegen = 10f;
     [SerializeField] private float boostEnergyDrain = 20f;
+    
 
     [Header("Health")]
     [SerializeField] private int health = 5;

@@ -12,6 +12,8 @@ public class Asteroids : MonoBehaviour
     [SerializeField] private Sprite[] sprites;
     [SerializeField] private float naturalDriftY = 0.5f; // Gerakan Y alami
     [SerializeField] private float rotationTorque = 30f;
+    [SerializeField] private GameObject destroyEffect;
+    [SerializeField] private int lives;
 
     void Start()
     {
@@ -48,16 +50,42 @@ public class Asteroids : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.
-            CompareTag("bullet"))
+        // Hanya kurangi nyawa jika ditabrak Player atau bullet
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
         {
-            spriteRenderer.material = whiteMaterial;
-            StartCoroutine("ResetMaterial");
+            TakeDamage();
         }
     }
-    IEnumerator ResetMaterial()
+
+    private void TakeDamage()
+    {
+        lives--;
+
+        // Flash putih
+        if (whiteMaterial != null && spriteRenderer != null)
+        {
+            spriteRenderer.material = whiteMaterial;
+            StartCoroutine(ResetMaterial());
+        }
+
+        // Jika habis nyawa, hancurkan asteroid
+        if (lives <= 0)
+        {
+            if (destroyEffect != null)
+            {
+                Instantiate(destroyEffect, transform.position, Quaternion.identity);
+            }
+            Destroy(gameObject);
+        }
+    }
+
+    private IEnumerator ResetMaterial()
     {
         yield return new WaitForSeconds(0.2f);
-        spriteRenderer.material = defaultMaterial;
+        if (spriteRenderer != null && defaultMaterial != null)
+        {
+            spriteRenderer.material = defaultMaterial;
+        }
     }
+
 }
