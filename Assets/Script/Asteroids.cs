@@ -12,6 +12,8 @@ public class Asteroids : MonoBehaviour
     [SerializeField] private Sprite[] sprites; // Array sprite asteroid yang bisa dipilih secara acak
     [SerializeField] private float naturalDriftY = 0.5f; // Kecepatan drift alami pada sumbu Y
     [SerializeField] private float rotationTorque = 30f; // Besar torsi rotasi acak
+    [SerializeField] private GameObject destroyEffect;
+    [SerializeField] private int lives;
 
     void Start()
     {
@@ -49,20 +51,51 @@ public class Asteroids : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Jika asteroid bertabrakan dengan pemain atau peluru
+        // Hanya kurangi nyawa jika ditabrak Player atau bullet
         if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
         {
-            // Ganti material sprite menjadi putih sebagai efek visual terkena tabrakan
-            spriteRenderer.material = whiteMaterial;
-            // Mulai coroutine untuk mengembalikan material ke default setelah delay
-            StartCoroutine("ResetMaterial");
+            TakeDamage();
         }
-    }
 
-    IEnumerator ResetMaterial()
+        // Jika asteroid bertabrakan dengan pemain atau peluru
+        // if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
+        // {
+        //     // Ganti material sprite menjadi putih sebagai efek visual terkena tabrakan
+        //     spriteRenderer.material = whiteMaterial;
+        //     // Mulai coroutine untuk mengembalikan material ke default setelah delay
+        //     StartCoroutine("ResetMaterial");
+        // }
+    }
+    // private void TakeDamage()
+    // {
+    //     lives--;
+
+    //     // Flash putih
+    //     if (whiteMaterial != null && spriteRenderer != null)
+    //     {
+    //         spriteRenderer.material = whiteMaterial;
+    //         StartCoroutine(ResetMaterial());
+    //     }
+
+    //     // Jika habis nyawa, hancurkan asteroid
+    //     if (lives <= 0)
+    //     {
+    //         if (destroyEffect != null)
+    //         {
+    //             Instantiate(destroyEffect, transform.position, Quaternion.identity);
+    //         }
+    //         Destroy(gameObject);
+    //     }
+    // }
+
+    private IEnumerator ResetMaterial()
+
     {
         // Tunggu selama 0.2 detik sebelum mengembalikan material ke default
         yield return new WaitForSeconds(0.2f);
-        spriteRenderer.material = defaultMaterial;
+        if (spriteRenderer != null && defaultMaterial != null)
+        {
+            spriteRenderer.material = defaultMaterial;
+        }
     }
 }
