@@ -2,25 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Enum untuk menentukan arah scroll
 public enum ScrollDirection { LeftToRight, RightToLeft, DownToUp, UpToDown };
 
-public class SpaceManager : MonoBehaviour {
-    //Set the direction that the screen or the camera is moving
+public class SpaceManager : MonoBehaviour
+{
+    // Menentukan arah scroll layar atau kamera
     public ScrollDirection scrollDirection = ScrollDirection.LeftToRight;
-    ScrollDirection direction;
+    ScrollDirection direction; // Variabel untuk menyimpan arah scroll saat ini
 
-    public static SpaceManager instance = null;
+    public static SpaceManager instance = null; // Instance singleton untuk akses global
 
-    void Start () {
-        direction = scrollDirection;
-        instance = this;
+    void Start()
+    {
+        direction = scrollDirection; // Set arah scroll awal
+        instance = this; // Set instance singleton
     }
-	
-	void Update () {
-        //Prevent that the variable could be changed in execution mode (removing this could cause bugs)
-        if(direction != scrollDirection)
+
+    void Update()
+    {
+        // Mencegah perubahan arah scroll saat mode eksekusi (menghapus ini dapat menyebabkan bug)
+        if (direction != scrollDirection)
         {
-            scrollDirection = direction;
+            scrollDirection = direction; // Kembalikan arah scroll ke nilai awal
         }
-	}
+    }
 }

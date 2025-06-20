@@ -304,6 +304,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -1772,7 +1785,73 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      locust_pop_0: -7357094842179682256
+      locust_pop_1: 8095614185542569604
+      locust_pop_10: -5642084895070886831
+      locust_pop_11: -728997796934376641
+      locust_pop_12: 2159393883075482833
+      locust_pop_13: 519884021595721884
+      locust_pop_14: -8881123972000813605
+      locust_pop_15: -7363560318529639397
+      locust_pop_16: -1202541408211626682
+      locust_pop_17: -5615770992586800073
+      locust_pop_18: 1694019613905442949
+      locust_pop_19: 6994633630477661081
+      locust_pop_2: -1825048713549105610
+      locust_pop_20: -6945221973057719511
+      locust_pop_21: -8581992756481901219
+      locust_pop_22: -3099701468314589698
+      locust_pop_23: -3906718055304269881
+      locust_pop_24: -9123505051881267055
+      locust_pop_25: -1662778091344061164
+      locust_pop_26: -4747292275655703618
+      locust_pop_27: 3453364730416474657
+      locust_pop_28: -9049901475072914980
+      locust_pop_29: -8898641262658332506
+      locust_pop_3: 242786211193473211
+      locust_pop_30: 2328573231427674565
+      locust_pop_31: -7405471491151085806
+      locust_pop_32: -3390850179843342028
+      locust_pop_33: 5496504993128779405
+      locust_pop_34: 1278896608633477790
+      locust_pop_35: -5058834235800855400
+      locust_pop_36: 1230496979555668595
+      locust_pop_37: -5517562053661903624
+      locust_pop_38: -2121455558476921897
+      locust_pop_39: 4964911990183484319
+      locust_pop_4: 8590371553066374783
+      locust_pop_40: 9046653824102509592
+      locust_pop_41: -1768461092266596445
+      locust_pop_42: 1796977380369048216
+      locust_pop_43: 6150341737766656864
+      locust_pop_44: -1496844620010644881
+      locust_pop_45: 6469700399998530924
+      locust_pop_46: 2384599725718402459
+      locust_pop_47: -2458909383997328734
+      locust_pop_48: 4671868277815650317
+      locust_pop_49: 890956550423671885
+      locust_pop_5: 6506746481793786337
+      locust_pop_50: -6126525330708904958
+      locust_pop_51: -6315597347519796022
+      locust_pop_52: -7199283282808938025
+      locust_pop_53: 5838237890686722539
+      locust_pop_54: -3922075824402194141
+      locust_pop_55: -1026824039997067234
+      locust_pop_56: 8559473532880394174
+      locust_pop_57: -4425734605246007369
+      locust_pop_58: 8360175734945198779
+      locust_pop_59: -8333304459476776678
+      locust_pop_6: -6377505052577112096
+      locust_pop_60: 5229681030194561941
+      locust_pop_61: 8416799220027855128
+      locust_pop_62: -1640821928505547451
+      locust_pop_63: 5036843987564212603
+      locust_pop_64: 6115537418803813818
+      locust_pop_65: 3354028729295758077
+      locust_pop_7: 1821661975250052489
+      locust_pop_8: -458684889083802105
+      locust_pop_9: 3528946508824689653
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

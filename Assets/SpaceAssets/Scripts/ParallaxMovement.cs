@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParallaxMovement : MonoBehaviour {
-    //Set the direction that the screen or the camera is moving
+public class ParallaxMovement : MonoBehaviour
+{
+    // Menentukan arah pergerakan layar atau kamera
     ScrollDirection direction;
-    //This speed value create the parallax effect
-    //Note: This speed affect the movement of the object based on the camera speed
+    // Nilai kecepatan ini menciptakan efek parallax
+    // Catatan: Kecepatan ini mempengaruhi pergerakan objek berdasarkan kecepatan kamera
     public float minSpeed = 0.2f;
     public float maxSpeed = 0.6f;
     Vector3 speed;
@@ -14,23 +15,25 @@ public class ParallaxMovement : MonoBehaviour {
     float lastScrollValue;
 
     public enum BehaviourOnExit { Destroy, Regenerate };
-    //Define if the object is destroyed or regenerate when the object is out of the screen
+    // Menentukan apakah objek dihancurkan atau diregenerasi ketika keluar dari layar
     public BehaviourOnExit behaviourOnExit = BehaviourOnExit.Regenerate;
 
     Transform cameraTransform;
-    //Determine the value offScreen that the object has to be to consider out of screen
-    //It also is used to regenerate it
-    //if the value is 1f is the screen's width or heigth depending on the direction   
+    // Menentukan nilai offScreen yang harus dicapai objek untuk dianggap keluar dari layar
+    // Juga digunakan untuk meregenerasi objek
+    // Jika nilainya 1f, berarti lebar atau tinggi layar tergantung pada arah
     public float limitOffScreen = 1f;
 
     void Start()
     {
+        // Mengambil arah scroll dari SpaceManager jika ada
         if (SpaceManager.instance != null)
             direction = SpaceManager.instance.scrollDirection;
 
-        // Set kecepatan tetap karena tidak berdasarkan gerakan kamera
+        // Menetapkan kecepatan acak dalam rentang yang ditentukan
         float randomSpeed = Random.Range(minSpeed, maxSpeed);
 
+        // Menentukan kecepatan berdasarkan arah scroll
         switch (direction)
         {
             case ScrollDirection.LeftToRight:
@@ -48,26 +51,26 @@ public class ParallaxMovement : MonoBehaviour {
         }
     }
 
-
     void Regenerate()
     {
+        // Mendapatkan posisi saat ini dari objek
         Vector3 currentPos = transform.position;
 
         // Misalnya arah RightToLeft
         switch (direction)
         {
             case ScrollDirection.RightToLeft:
-                float newY = currentPos.y; // Tetap di posisi Y yang sama
+                // Tetap di posisi Y yang sama dan pindahkan ke kanan layar
+                float newY = currentPos.y;
                 transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1f + limitOffScreen, Camera.main.WorldToViewportPoint(transform.position).y, 10f));
                 break;
 
-                // Tambahkan logika lain jika pakai arah lain
+                // Tambahkan logika lain jika menggunakan arah lain
         }
 
         // Hilangkan semua random jika tidak perlu
-        // (Jika kamu hanya ingin looping tanpa rotasi atau ubah ukuran)
+        // (Jika hanya ingin looping tanpa rotasi atau ubah ukuran)
     }
-
 
     void Update()
     {
@@ -75,8 +78,7 @@ public class ParallaxMovement : MonoBehaviour {
         float multiplier = PlayerController.instance != null ? PlayerController.instance.BoostMultiplier : 1f;
         transform.position += speed * multiplier * Time.deltaTime;
 
-
-        // Cek apakah keluar layar, dan regenerasi
+        // Cek apakah objek keluar layar, dan regenerasi jika perlu
         Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
 
         switch (direction)
@@ -114,5 +116,4 @@ public class ParallaxMovement : MonoBehaviour {
                 break;
         }
     }
-
 }
