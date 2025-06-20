@@ -272,7 +272,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      locustmorph_0: 987648193118723531
+      locustmorph_1: -1182288027662524906
+      locustmorph_2: 746690809680363692
+      locustmorph_3: 216214826535000004
+      locustmorph_4: -7989817001677814027
+      locustmorph_5: -7408264423918629294
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
