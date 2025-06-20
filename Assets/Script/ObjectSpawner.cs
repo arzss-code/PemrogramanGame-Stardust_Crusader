@@ -1,40 +1,74 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectSpawner : MonoBehaviour
 {
-    [Header("Spawn Settings")]
-    public GameObject prefab;
-    public float spawnInterval = 2f;
-
-    private float spawnTimer;
-
-    
-
-    [SerializeField] private Transform spawn1;  // Posisi atas/titik awal Y
-    [SerializeField] private Transform spawn2;  // Posisi bawah/titik akhir Y
-
-    private void Update()
+    [System.Serializable]
+    public class Wave
     {
-        if (prefab == null) return;
+        public GameObject prefab;
+        public float spawnInterval = 1f;
+        public int spawnCount = 5;
+    }
 
-        spawnTimer += Time.deltaTime;
+    [Header("Wave Settings")]
+    [SerializeField] private List<Wave> waves;
+    [SerializeField] private Transform spawn1;
+    [SerializeField] private Transform spawn2;
 
-        if (spawnTimer >= spawnInterval)
+    private int currentWaveIndex = 0;
+    private int spawnedInCurrentWave = 0;
+    private float spawnTimer = 0f;
+    private bool waveActive = false;
+
+    private void Start()
+    {
+        if (waves.Count > 0)
         {
-            spawnTimer = 0f;
-            SpawnObject();
+            waveActive = true;
         }
     }
 
-    private void SpawnObject()
+    private void Update()
+    {
+        if (!waveActive || waves.Count == 0) return;
+
+        Wave currentWave = waves[currentWaveIndex];
+
+        spawnTimer += Time.deltaTime;
+
+        if (spawnTimer >= currentWave.spawnInterval)
+        {
+            spawnTimer = 0f;
+
+            if (spawnedInCurrentWave < currentWave.spawnCount)
+            {
+                Spawn(currentWave);
+                spawnedInCurrentWave++;
+            }
+            else
+            {
+                // Proceed to next wave
+                currentWaveIndex++;
+                spawnedInCurrentWave = 0;
+
+                if (currentWaveIndex >= waves.Count)
+                {
+                    currentWaveIndex = 0; // Loop back to the first wave
+                }
+            }
+        }
+    }
+
+    private void Spawn(Wave wave)
     {
         Vector2 spawnPosition = RandomSpawnPoint();
-        Instantiate(prefab, spawnPosition, Quaternion.identity);
+        Instantiate(wave.prefab, spawnPosition, Quaternion.identity);
     }
 
     private Vector2 RandomSpawnPoint()
     {
         float randomY = Random.Range(spawn1.position.y, spawn2.position.y);
-        return new Vector2(spawn1.position.x, randomY);  // X tetap, Y acak
+        return new Vector2(spawn1.position.x, randomY);
     }
 }

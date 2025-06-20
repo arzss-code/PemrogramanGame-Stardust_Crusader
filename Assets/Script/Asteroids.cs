@@ -69,14 +69,22 @@ public class Asteroids : MonoBehaviour
         }
 
         // Jika habis nyawa, hancurkan asteroid
-        if (lives <= 0)
-        {
+        if(lives <= 0)
+{
             if (destroyEffect != null)
             {
-                Instantiate(destroyEffect, transform.position, Quaternion.identity);
+                // Instantiate dan simpan referensinya
+                GameObject effect = Instantiate(destroyEffect, transform.position, Quaternion.identity);
+
+                // Hancurkan efek setelah durasi tertentu (misal 2 detik)
+                Destroy(effect, 0.5f);
             }
+
+            // Hancurkan asteroid
             Destroy(gameObject);
         }
+
+
     }
 
     private IEnumerator ResetMaterial()
