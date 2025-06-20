@@ -122,12 +122,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private float shootDelay = 0.2f; // Waktu delay antar tembakan (dalam detik)
+    private float lastShootTime = 0f;
+
     private void HandleShooting()
     {
-        // Tembak jika tombol kiri mouse ditekan
-        if (Input.GetMouseButtonDown(0))
+        // Tembak selama tombol kiri mouse ditekan dan sudah melewati delay
+        if (Input.GetMouseButton(0) && Time.time - lastShootTime >= shootDelay)
         {
             LaserWeapon.Instance.Shoot();
+            lastShootTime = Time.time;
         }
     }
 
