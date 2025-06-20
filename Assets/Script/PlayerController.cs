@@ -135,15 +135,61 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //! Gerakan keyboard (disimpan sebagai komentar)
+    // private void MovePlayer()
+    // {
+    //     // // Kurangi gerakan vertikal saat boost
+    //     // float verticalReduction = isBoosting ? 0.3f : 1f;
+    //     // Vector3 movement = new Vector3(moveInput.x, moveInput.y * verticalReduction, 0f).normalized;
+    //     // float speed = moveSpeed;
+    //     // // Pindahkan pemain
+    //     // transform.position += movement * speed * Time.deltaTime;
+    // }
+
+    //! Gerakan menggunakan sensor mouse (mengikuti posisi kursor)
+    private Vector3 lastMousePosition;
+    private float mouseSpeed;
+
     private void MovePlayer()
     {
+        // Hitung kecepatan gerak mouse
+        Vector3 currentMousePosition = Input.mousePosition;
+        if (lastMousePosition == Vector3.zero)
+            lastMousePosition = currentMousePosition;
+
+        // Hitung delta mouse dalam world space
+        Vector3 worldLastMouse = Camera.main.ScreenToWorldPoint(lastMousePosition);
+        Vector3 worldCurrentMouse = Camera.main.ScreenToWorldPoint(currentMousePosition);
+        worldLastMouse.z = 0f;
+        worldCurrentMouse.z = 0f;
+
+        Vector3 mouseDelta = worldCurrentMouse - worldLastMouse;
+        mouseSpeed = mouseDelta.magnitude / Time.deltaTime;
+
+        // Normalisasi kecepatan mouse agar tidak terlalu besar/kecil
+        float minSpeed = moveSpeed * 0.5f;
+        float maxSpeed = boostSpeed;
+        float mappedSpeed = Mathf.Clamp(mouseSpeed, minSpeed, maxSpeed);
+
+        // Arah gerak player mengikuti arah mouse bergerak
+        Vector3 direction = mouseDelta.normalized;
+
         // Kurangi gerakan vertikal saat boost
         float verticalReduction = isBoosting ? 0.3f : 1f;
-        Vector3 movement = new Vector3(moveInput.x, moveInput.y * verticalReduction, 0f).normalized;
+        direction = new Vector3(direction.x, direction.y * verticalReduction, 0f).normalized;
 
-        float speed = moveSpeed;
-        // Pindahkan pemain
-        transform.position += movement * speed * Time.deltaTime;
+        // Hanya bergerak jika mouse bergerak cukup jauh
+        if (mouseDelta.magnitude > 0.01f)
+        {
+            transform.position += direction * mappedSpeed * Time.deltaTime;
+            moveInput = direction; // Untuk animasi
+        }
+        else
+        {
+            moveInput = Vector2.zero; // Idle animasi
+        }
+
+        lastMousePosition = currentMousePosition;
     }
 
     private void UpdateAnimator()
