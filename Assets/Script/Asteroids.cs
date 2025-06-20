@@ -49,6 +49,28 @@ public class Asteroids : MonoBehaviour
         }
     }
 
+    private void TakeDamage()
+    {
+        lives--;
+
+        // Flash putih
+        if (whiteMaterial != null && spriteRenderer != null)
+        {
+            spriteRenderer.material = whiteMaterial;
+            StartCoroutine(ResetMaterial());
+        }
+
+        // Jika habis nyawa, hancurkan asteroid
+        if (lives <= 0)
+        {
+            if (destroyEffect != null)
+            {
+                Instantiate(destroyEffect, transform.position, Quaternion.identity);
+            }
+            Destroy(gameObject);
+        }
+    }
+    
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Hanya kurangi nyawa jika ditabrak Player atau bullet
@@ -66,27 +88,6 @@ public class Asteroids : MonoBehaviour
         //     StartCoroutine("ResetMaterial");
         // }
     }
-    // private void TakeDamage()
-    // {
-    //     lives--;
-
-    //     // Flash putih
-    //     if (whiteMaterial != null && spriteRenderer != null)
-    //     {
-    //         spriteRenderer.material = whiteMaterial;
-    //         StartCoroutine(ResetMaterial());
-    //     }
-
-    //     // Jika habis nyawa, hancurkan asteroid
-    //     if (lives <= 0)
-    //     {
-    //         if (destroyEffect != null)
-    //         {
-    //             Instantiate(destroyEffect, transform.position, Quaternion.identity);
-    //         }
-    //         Destroy(gameObject);
-    //     }
-    // }
 
     private IEnumerator ResetMaterial()
 
