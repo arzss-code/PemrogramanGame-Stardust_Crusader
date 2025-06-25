@@ -2,15 +2,10 @@ using UnityEngine;
 
 public class LaserBullets : MonoBehaviour
 {
-    // Variabel untuk menyimpan data milik peluru ini sendiri
     private Vector2 moveDirection;
     private float bulletSpeed;
-    private float bulletDamage; // Variabel damage sudah disimpan, siap digunakan
+    private float bulletDamage;
 
-    /// <summary>
-    /// Inisialisasi peluru dengan arah, kecepatan, dan kerusakan.
-    /// Metode ini dipanggil oleh LaserWeapon saat peluru dibuat.
-    /// </summary>
     public void Initialize(Vector2 shootDirection, float speed, float damage)
     {
         this.moveDirection = shootDirection.normalized;
@@ -20,36 +15,56 @@ public class LaserBullets : MonoBehaviour
 
     void Update()
     {
-        // Gerakkan peluru menggunakan speed-nya sendiri, bukan dari LaserWeapon.Instance
         transform.position += (Vector3)(moveDirection * bulletSpeed * Time.deltaTime);
 
-        // Hancurkan peluru jika keluar layar
         if (transform.position.x > 55)
         {
             Destroy(gameObject);
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    // Mengganti OnCollisionEnter2D menjadi OnTriggerEnter2D
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Jika menabrak obstacle, hancurkan diri sendiri
-        if (collision.gameObject.CompareTag("obstacle"))
+        // Jika mengenai obstacle
+        if (other.CompareTag("obstacle"))
         {
+            // Hancurkan peluru
             Destroy(gameObject);
+            return; // Keluar dari fungsi agar tidak menjalankan kode di bawahnya
         }
 
-        // CONTOH PENGGUNAAN DAMAGE: Jika menabrak musuh
-        // if (collision.gameObject.CompareTag("Enemy"))
+        // // Jika mengenai Asteroid
+        // if (other.CompareTag("Asteroid"))
         // {
-        //     // Ambil komponen health dari musuh dan berikan damage
-        //     EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-        //     if (enemy != null)
+        //     // Ambil komponen script Asteroids dari objek yang ditabrak
+        //     Asteroids asteroid = other.GetComponent<Asteroids>();
+        //     if (asteroid != null)
         //     {
-        //         enemy.TakeDamage(this.bulletDamage);
+        //         // Panggil fungsi TakeDamage pada asteroid
+        //         // (Kita akan upgrade sedikit script Asteroid agar bisa menerima damage)
+        //         asteroid.TakeDamage((int)this.bulletDamage);
         //     }
             
-        //     // Hancurkan peluru setelah mengenai musuh
+        //     // Hancurkan peluru setelah mengenai asteroid
         //     Destroy(gameObject);
+        //     return;
         // }
+
+        // Jika mengenai Boss
+        if (other.CompareTag("Boss"))
+        {
+            // Ambil komponen script BossController
+            BossController boss = other.GetComponent<BossController>();
+            if (boss != null)
+            {
+                // Panggil fungsi TakeDamage pada boss dengan damage dari peluru ini
+                boss.TakeDamage((int)this.bulletDamage);
+            }
+            
+            // Hancurkan peluru setelah mengenai boss
+            Destroy(gameObject);
+            return;
+        }
     }
 }

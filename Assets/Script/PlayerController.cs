@@ -312,6 +312,11 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Player Dead");
             // TODO: Trigger death, game over, animation, etc.
+            // Panggil fungsi GameOver dari GameManager
+            GameManager.instance.GameOver();
+
+            // Mungkin nonaktifkan player agar tidak bisa bergerak lagi
+            gameObject.SetActive(false); 
         }
     }
 

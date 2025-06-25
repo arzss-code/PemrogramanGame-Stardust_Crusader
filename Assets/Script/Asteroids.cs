@@ -81,7 +81,7 @@ public class Asteroids : MonoBehaviour
         else if (other.CompareTag("bullet"))
         {
             // Logika untuk peluru tidak berubah
-            TakeDamage();
+            TakeDamage(1);
             Destroy(other.gameObject); 
         }
     }
@@ -89,6 +89,11 @@ public class Asteroids : MonoBehaviour
     // Saya pindahkan logika hancur ke method sendiri agar rapi
     private void DestroyAsteroid()
     {
+        // Melapor ke LevelController bahwa satu musuh telah dikalahkan
+        if (LevelController.main != null)
+        {
+            LevelController.main.EnemyDefeated();
+        }
         if (destroyEffect != null)
         {
             GameObject effect = Instantiate(destroyEffect, transform.position, Quaternion.identity);
@@ -98,10 +103,11 @@ public class Asteroids : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void TakeDamage()
+    // Ubah menjadi public dan tambahkan parameter
+    public void TakeDamage(int damageAmount)
     {
-        lives--;
-
+        lives -= damageAmount; // Kurangi nyawa sesuai damage yang diterima
+        
         // Flash putih
         if (whiteMaterial != null && spriteRenderer != null)
         {
@@ -112,7 +118,6 @@ public class Asteroids : MonoBehaviour
         // Jika habis nyawa, hancurkan asteroid
         if (lives <= 0)
         {
-            // Panggil method penghancuran yang sudah kita buat
             DestroyAsteroid();
         }
     }
