@@ -136,7 +136,7 @@ MonoBehaviour:
   naturalDriftY: 10
   rotationTorque: 120
   destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
-  lives: 0
+  lives: 1
 --- !u!70 &4613738927372455102
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -167,7 +167,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0

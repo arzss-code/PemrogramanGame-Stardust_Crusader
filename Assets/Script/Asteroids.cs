@@ -48,13 +48,54 @@ public class Asteroids : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    // private void OnCollisionEnter2D(Collision2D collision)
+    // {
+    //     // Hanya kurangi nyawa jika ditabrak Player atau bullet
+    //     if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
+    //     {
+    //         TakeDamage();
+    //     }
+    // }
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Hanya kurangi nyawa jika ditabrak Player atau bullet
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
+        if (other.CompareTag("Player"))
         {
-            TakeDamage();
+            // --- BLOK KODE BARU DIMULAI DI SINI ---
+
+            // 1. Ambil komponen PlayerController dari objek yang kita sentuh.
+            PlayerController player = other.GetComponent<PlayerController>();
+
+            // 2. Jika komponennya berhasil ditemukan (untuk menghindari error),
+            //    panggil fungsinya untuk mengurangi nyawa player.
+            if (player != null)
+            {
+                player.TakeDamage(1); // Memberi 1 damage pada player
+            }
+
+            // --- BLOK KODE BARU SELESAI ---
+
+            // 3. Setelah memberi damage, hancurkan asteroid seperti sebelumnya.
+            DestroyAsteroid();
         }
+        else if (other.CompareTag("bullet"))
+        {
+            // Logika untuk peluru tidak berubah
+            TakeDamage();
+            Destroy(other.gameObject); 
+        }
+    }
+    
+    // Saya pindahkan logika hancur ke method sendiri agar rapi
+    private void DestroyAsteroid()
+    {
+        if (destroyEffect != null)
+        {
+            GameObject effect = Instantiate(destroyEffect, transform.position, Quaternion.identity);
+            Destroy(effect, 0.5f); // Hancurkan efek setelah durasinya
+        }
+        // Hancurkan game object asteroid ini
+        Destroy(gameObject);
     }
 
     private void TakeDamage()
@@ -69,22 +110,11 @@ public class Asteroids : MonoBehaviour
         }
 
         // Jika habis nyawa, hancurkan asteroid
-        if(lives <= 0)
-{
-            if (destroyEffect != null)
-            {
-                // Instantiate dan simpan referensinya
-                GameObject effect = Instantiate(destroyEffect, transform.position, Quaternion.identity);
-
-                // Hancurkan efek setelah durasi tertentu (misal 2 detik)
-                Destroy(effect, 0.5f);
-            }
-
-            // Hancurkan asteroid
-            Destroy(gameObject);
+        if (lives <= 0)
+        {
+            // Panggil method penghancuran yang sudah kita buat
+            DestroyAsteroid();
         }
-
-
     }
 
     private IEnumerator ResetMaterial()

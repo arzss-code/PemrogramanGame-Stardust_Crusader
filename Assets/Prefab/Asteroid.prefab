@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5735838487648037180}
   - component: {fileID: 8123398606447975702}
   - component: {fileID: 3742963659324009814}
-  - component: {fileID: 7622265840452357862}
   - component: {fileID: 423902716660859441}
+  - component: {fileID: 2505433167452924628}
   m_Layer: 8
   m_Name: Asteroid
   m_TagString: obstacle
@@ -117,7 +117,30 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &7622265840452357862
+--- !u!114 &423902716660859441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3207898793430442549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 164355b4180821849aa1fd2c991f7319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
+  sprites:
+  - {fileID: -511954582, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
+  - {fileID: 1757433252, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
+  - {fileID: 756879195, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
+  - {fileID: 1023856489, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
+  - {fileID: 1598730767, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
+  naturalDriftY: 10
+  rotationTorque: 120
+  destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
+  lives: 2
+--- !u!58 &2505433167452924628
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,32 +170,9 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.02916792}
-  m_Radius: 1.1697885
---- !u!114 &423902716660859441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3207898793430442549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 164355b4180821849aa1fd2c991f7319, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
-  sprites:
-  - {fileID: -511954582, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 1757433252, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 756879195, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 1023856489, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  - {fileID: 1598730767, guid: e75f7562ad2909e46a0d8331ff2dfeb6, type: 3}
-  naturalDriftY: 10
-  rotationTorque: 120
-  destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
-  lives: 2
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 1.2499999
