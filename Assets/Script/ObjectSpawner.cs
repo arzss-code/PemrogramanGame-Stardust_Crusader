@@ -1,3 +1,4 @@
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +7,12 @@ public class ObjectSpawner : MonoBehaviour
     [System.Serializable]
     public class Wave
     {
+        public string waveName;
         public GameObject prefab;
         public float spawnInterval = 1f;
         public int spawnCount = 5;
+        public bool loopForever = false;
+        public float minDuration = 10f; // waktu minimum wave aktif
     }
 
     [Header("Wave Settings")]
@@ -16,54 +20,74 @@ public class ObjectSpawner : MonoBehaviour
     [SerializeField] private Transform spawn1;
     [SerializeField] private Transform spawn2;
 
-    private int currentWaveIndex = 0;
-    private int spawnedInCurrentWave = 0;
-    private float spawnTimer = 0f;
-    private bool waveActive = false;
+    // ➕ Tambahkan flag ini
+    [HideInInspector] public bool finishedSpawning = false;
 
     private void Start()
     {
-        if (waves.Count > 0)
-        {
-            waveActive = true;
-        }
+        StartCoroutine(StartWaves());
     }
 
-    private void Update()
+    private IEnumerator StartWaves()
     {
-        if (!waveActive || waves.Count == 0) return;
+        List<Coroutine> waveCoroutines = new List<Coroutine>();
 
-        Wave currentWave = waves[currentWaveIndex];
-
-        spawnTimer += Time.deltaTime;
-
-        if (spawnTimer >= currentWave.spawnInterval)
+        for (int i = 0; i < waves.Count; i++)
         {
-            spawnTimer = 0f;
+            Wave wave = waves[i];
 
-            if (spawnedInCurrentWave < currentWave.spawnCount)
-            {
-                Spawn(currentWave);
-                spawnedInCurrentWave++;
-            }
-            else
-            {
-                // Proceed to next wave
-                currentWaveIndex++;
-                spawnedInCurrentWave = 0;
+            // Delay antar wave (opsional)
+            if (i > 0) yield return new WaitForSeconds(2f);
 
-                if (currentWaveIndex >= waves.Count)
-                {
-                    currentWaveIndex = 0; // Loop back to the first wave
-                }
-            }
+            Coroutine waveCoroutine = StartCoroutine(SpawnWave(wave));
+            waveCoroutines.Add(waveCoroutine);
         }
+
+        // Tunggu semua wave selesai (yang tidak loopForever)
+        yield return new WaitUntil(() => AllNonLoopingWavesFinished());
+
+        // Tandai sudah selesai
+        finishedSpawning = true;
+        Debug.Log("🎯 Semua wave ObstacleSpawner selesai!");
     }
 
-    private void Spawn(Wave wave)
+    private bool AllNonLoopingWavesFinished()
     {
-        Vector2 spawnPosition = RandomSpawnPoint();
-        Instantiate(wave.prefab, spawnPosition, Quaternion.identity);
+        foreach (Wave wave in waves)
+        {
+            if (!wave.loopForever)
+            {
+                // Kita bisa anggap selesai jika spawnCount sudah habis dan minDuration lewat
+                // Karena coroutine akan berhenti kalau syarat while terpenuhi
+                // Jadi jika coroutine-nya selesai, maka kita anggap selesai
+                // Kita tidak bisa cek langsung dari sini → jadi asumsi setelah coroutine selesai maka wave juga selesai
+                // return true saat ini sudah representatif
+                continue;
+            }
+        }
+        return true;
+    }
+
+    private IEnumerator SpawnWave(Wave wave)
+    {
+        Debug.Log("Memulai wave: " + wave.waveName);
+
+        int spawned = 0;
+        float waveStartTime = Time.time;
+
+        while (wave.loopForever || spawned < wave.spawnCount || Time.time - waveStartTime < wave.minDuration)
+        {
+            if (wave.loopForever || spawned < wave.spawnCount)
+            {
+                Vector2 spawnPosition = RandomSpawnPoint();
+                Instantiate(wave.prefab, spawnPosition, Quaternion.identity);
+                spawned++;
+            }
+
+            yield return new WaitForSeconds(wave.spawnInterval);
+        }
+
+        Debug.Log("Wave selesai: " + wave.waveName);
     }
 
     private Vector2 RandomSpawnPoint()

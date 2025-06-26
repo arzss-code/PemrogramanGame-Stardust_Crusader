@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -19,9 +19,9 @@ public class LevelController : MonoBehaviour
     [Header("Wave Settings")]
     public Wave[] waves;
 
-    [Header("Enemy Spawn Settings")] // DITAMBAHKAN: Header baru
+    [Header("Enemy Spawn Settings")]
     [Tooltip("Area di mana musuh akan muncul. Buat Empty GameObject dengan BoxCollider2D.")]
-    public BoxCollider2D enemySpawnArea; // DITAMBAHKAN: Variabel untuk area spawn
+    public BoxCollider2D enemySpawnArea;
 
     [Header("Boss Settings")]
     public GameObject bossPrefab;
@@ -30,6 +30,9 @@ public class LevelController : MonoBehaviour
 
     [Header("Boss UI References")]
     public Slider bossHealthBarSlider;
+
+    [Header("Dependency")]
+    public ObjectSpawner obstacleSpawner; // ➕ Tambahan: referensi ke ObstacleSpawner
 
     private int currentWaveIndex = 0;
     private int enemiesRemaining;
@@ -47,6 +50,35 @@ public class LevelController : MonoBehaviour
         {
             bossHealthBarSlider.gameObject.SetActive(false);
         }
+
+        StartCoroutine(WaitForObstacleSpawnerThenStart());
+    }
+
+    // ➕ Coroutine baru: Tunggu obstacleSpawner selesai
+    private IEnumerator WaitForObstacleSpawnerThenStart()
+    {
+        if (waves == null || waves.Length == 0)
+        {
+            Debug.LogError("Wave list kosong!");
+            yield break;
+        }
+
+        if (obstacleSpawner == null)
+        {
+            Debug.LogWarning("ObstacleSpawner tidak diset. Langsung mulai level.");
+        }
+        else
+        {
+            Debug.Log("Menunggu ObstacleSpawner selesai...");
+            while (!obstacleSpawner.finishedSpawning)
+            {
+                yield return null;
+            }
+            Debug.Log("ObstacleSpawner selesai! Lanjut ke wave musuh.");
+        }
+
+        Debug.Log("Starting wave index: " + currentWaveIndex);
+        Debug.Log("Wave count: " + waves.Length);
         StartCoroutine(SpawnWave(waves[currentWaveIndex]));
     }
 
@@ -55,25 +87,20 @@ public class LevelController : MonoBehaviour
         Debug.Log("Memulai Gelombang: " + wave.waveName);
         enemiesRemaining = wave.enemyCount;
 
-        // Cek apakah prefab musuh sudah diatur untuk menghindari error
         if (wave.enemyPrefab == null)
         {
             Debug.LogError("Enemy Prefab untuk gelombang '" + wave.waveName + "' belum diatur di LevelController!");
-            yield break; // Hentikan coroutine jika prefab kosong
+            yield break;
         }
 
         for (int i = 0; i < wave.enemyCount; i++)
         {
-            // --- BAGIAN INI DIIMPLEMENTASIKAN ---
-            // Tentukan posisi spawn acak di dalam area
             Bounds bounds = enemySpawnArea.bounds;
             float randomX = Random.Range(bounds.min.x, bounds.max.x);
             float randomY = Random.Range(bounds.min.y, bounds.max.y);
             Vector2 spawnPosition = new Vector2(randomX, randomY);
 
-            // Munculkan musuh
             Instantiate(wave.enemyPrefab, spawnPosition, Quaternion.identity);
-            // ------------------------------------
 
             yield return new WaitForSeconds(wave.spawnInterval);
         }
