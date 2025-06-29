@@ -176,3 +176,4 @@ MonoBehaviour:
   rotationTorque: 120
   destroyEffect: {fileID: 752189567265358731, guid: 61d1c66eb0448d34bbd1a4c0deadc417, type: 3}
   lives: 3
+  colliderDelay: 2.5
