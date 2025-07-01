@@ -4,95 +4,102 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Asteroids : MonoBehaviour
 {
-    private SpriteRenderer spriteRenderer; // Komponen untuk menampilkan sprite asteroid
-    private Rigidbody2D rb; // Komponen fisika untuk mengatur gerakan asteroid
+    private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
+    private Collider2D col;
 
-    private Material defaultMaterial; // Material default sprite untuk efek visual
-    [SerializeField] private Material whiteMaterial; // Material putih untuk efek saat terkena tabrakan
-    [SerializeField] private Sprite[] sprites; // Array sprite asteroid yang bisa dipilih secara acak
-    [SerializeField] private float naturalDriftY = 0.5f; // Kecepatan drift alami pada sumbu Y
-    [SerializeField] private float rotationTorque = 30f; // Besar torsi rotasi acak
+    private Material defaultMaterial;
+    [SerializeField] private Material whiteMaterial;
+    [SerializeField] private Sprite[] sprites;
+    [SerializeField] private float naturalDriftY = 0.5f;
+    [SerializeField] private float rotationTorque = 30f;
     [SerializeField] private GameObject destroyEffect;
     [SerializeField] private int lives;
 
+    [Header("Collider Delay")]
+    [SerializeField] private float colliderDelay = 1f;
+
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>(); // Ambil komponen SpriteRenderer
-        rb = GetComponent<Rigidbody2D>(); // Ambil komponen Rigidbody2D
-        defaultMaterial = spriteRenderer.material; // Simpan material default untuk nanti
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
+        col.enabled = false; // Nonaktifkan collider dulu
+        StartCoroutine(EnableColliderAfterDelay(colliderDelay)); // Aktifkan setelah delay
 
-        // Pilih sprite secara acak dari array sprites untuk variasi tampilan asteroid
+        defaultMaterial = spriteRenderer.material;
         spriteRenderer.sprite = sprites[Random.Range(0, sprites.Length)];
 
-        // Tentukan drift alami ke atas atau ke bawah secara acak
         float driftY = Random.Range(-naturalDriftY, naturalDriftY);
-        rb.linearVelocity = new Vector2(0, driftY); // Set kecepatan linear pada sumbu Y
+        rb.linearVelocity = new Vector2(0, driftY);
 
-        // Berikan torsi rotasi acak agar asteroid berputar secara natural
         float torque = Random.Range(-rotationTorque, rotationTorque);
         rb.AddTorque(torque);
+    }
 
-        // Gravity, drag, dan pengaturan fisika lain dinonaktifkan melalui Inspector Unity
+    private IEnumerator EnableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (col != null) col.enabled = true;
     }
 
     void Update()
     {
-        // Hitung perpindahan horizontal berdasarkan kecepatan dunia dan multiplier boost pemain
         float moveX = (GameManager.instance.worldSpeed * PlayerController.instance.BoostMultiplier) * Time.deltaTime;
-        // Geser posisi asteroid ke kiri sesuai kecepatan yang dihitung
         transform.position += new Vector3(-moveX, 0);
 
-        // Jika asteroid sudah melewati batas kiri layar (x < -60), hancurkan objek untuk menghemat resource
         if (transform.position.x < -60f)
         {
             Destroy(gameObject);
         }
     }
 
-    private void TakeDamage()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        lives--;
+        if (other.CompareTag("Player"))
+        {
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.TakeDamage(1);
+            }
+            DestroyAsteroid();
+        }
+        else if (other.CompareTag("bullet"))
+        {
+            TakeDamage(1);
+            Destroy(other.gameObject);
+        }
+    }
 
-        // Flash putih
+    private void DestroyAsteroid()
+    {
+        if (destroyEffect != null)
+        {
+            GameObject effect = Instantiate(destroyEffect, transform.position, Quaternion.identity);
+            Destroy(effect, 0.5f);
+        }
+        Destroy(gameObject);
+    }
+
+    public void TakeDamage(int damageAmount)
+    {
+        lives -= damageAmount;
+
         if (whiteMaterial != null && spriteRenderer != null)
         {
             spriteRenderer.material = whiteMaterial;
             StartCoroutine(ResetMaterial());
         }
 
-        // Jika habis nyawa, hancurkan asteroid
         if (lives <= 0)
         {
-            if (destroyEffect != null)
-            {
-                Instantiate(destroyEffect, transform.position, Quaternion.identity);
-            }
-            Destroy(gameObject);
+            DestroyAsteroid();
         }
-    }
-    
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Hanya kurangi nyawa jika ditabrak Player atau bullet
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
-        {
-            TakeDamage();
-        }
-
-        // Jika asteroid bertabrakan dengan pemain atau peluru
-        // if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("bullet"))
-        // {
-        //     // Ganti material sprite menjadi putih sebagai efek visual terkena tabrakan
-        //     spriteRenderer.material = whiteMaterial;
-        //     // Mulai coroutine untuk mengembalikan material ke default setelah delay
-        //     StartCoroutine("ResetMaterial");
-        // }
     }
 
     private IEnumerator ResetMaterial()
-
     {
-        // Tunggu selama 0.2 detik sebelum mengembalikan material ke default
         yield return new WaitForSeconds(0.2f);
         if (spriteRenderer != null && defaultMaterial != null)
         {
