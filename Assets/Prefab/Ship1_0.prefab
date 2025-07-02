@@ -221,10 +221,6 @@ MonoBehaviour:
   entrySpeed: 35
   colliderDelay: 2
   maxHealth: 3
-<<<<<<< Updated upstream
-=======
-  whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
->>>>>>> Stashed changes
 --- !u!50 &-7564468516508168274
 Rigidbody2D:
   serializedVersion: 5

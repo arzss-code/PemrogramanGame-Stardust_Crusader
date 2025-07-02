@@ -5587,15 +5587,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
-  - waveName: Wave 1
-    enemyPrefab: {fileID: 0}
-    enemyCount: 20
+  - prefab: {fileID: 0}
     spawnInterval: 1
-  enemySpawnArea: {fileID: 0}
-  bossPrefab: {fileID: 125671370164308334, guid: 94d45a63dc0a3f14a965f38897cdeba5, type: 3}
-  bossSpawnPoint: {fileID: 752338382}
-  bossBattlePosition: {fileID: 142806651}
-  bossHealthBarSlider: {fileID: 809231337}
+    spawnCount: 5
+  spawn1: {fileID: 0}
+  spawn2: {fileID: 0}
+  obstacleSpawner: {fileID: 0}
+  delayBeforeEnemyWave: 3
 --- !u!4 &494377760
 Transform:
   m_ObjectHideFlags: 0
@@ -6116,17 +6114,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
-  - prefab: {fileID: 3207898793430442549, guid: d2000eb8e48d4664b9d315110b2eb58a, type: 3}
+  - waveName: 
+    prefab: {fileID: 3207898793430442549, guid: d2000eb8e48d4664b9d315110b2eb58a, type: 3}
     spawnInterval: 0.5
     spawnCount: 20
-  - prefab: {fileID: 3207898793430442549, guid: 57344aeb40ba1a14e837447d54a4684d, type: 3}
+    loopForever: 0
+    minDuration: 10
+  - waveName: 
+    prefab: {fileID: 3207898793430442549, guid: 57344aeb40ba1a14e837447d54a4684d, type: 3}
     spawnInterval: 0.5
     spawnCount: 20
-  - prefab: {fileID: 3207898793430442549, guid: 57344aeb40ba1a14e837447d54a4684d, type: 3}
+    loopForever: 0
+    minDuration: 10
+  - waveName: 
+    prefab: {fileID: 3207898793430442549, guid: 57344aeb40ba1a14e837447d54a4684d, type: 3}
     spawnInterval: 0.5
     spawnCount: 20
+    loopForever: 0
+    minDuration: 10
   spawn1: {fileID: 441824120}
   spawn2: {fileID: 1691987226}
+  finishedSpawning: 0
 --- !u!4 &1160648982
 Transform:
   m_ObjectHideFlags: 0
@@ -6996,7 +7004,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5089d5ecf8c974408039f76d65bcdbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentScheme: 0
+  currentScheme: 1
   moveSpeed: 15
   boostSpeed: 50
   stoppingDistance: 0.1
@@ -7008,6 +7016,7 @@ MonoBehaviour:
   health: 5
   maxHealth: 5
   boostEffect: {fileID: 349584300}
+  deathEffect: {fileID: 0}
   whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
 --- !u!50 &1679590915
 Rigidbody2D:

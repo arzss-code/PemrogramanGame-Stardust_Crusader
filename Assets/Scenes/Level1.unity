@@ -7263,7 +7263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5089d5ecf8c974408039f76d65bcdbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentScheme: 0
+  currentScheme: 1
   moveSpeed: 15
   boostSpeed: 50
   stoppingDistance: 0.1
