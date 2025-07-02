@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 
     public enum ControlScheme { Keyboard, Mouse }
     [Header("Control Settings")]
-    public ControlScheme currentScheme = ControlScheme.Keyboard;
+    public ControlScheme currentScheme = ControlScheme.Mouse;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -68,6 +68,13 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         defaultMaterial = spriteRenderer.material;
         energy = maxEnergy;
+
+        // Apply control scheme from settings
+        if (SettingsManager.instance != null)
+        {
+            currentScheme = SettingsManager.instance.GetControlScheme();
+            SettingsManager.instance.ApplySettingsToPlayer();
+        }
 
         UIController.instance?.SetMaxEnergy(maxEnergy);
         UIController.instance?.SetMaxHealth(maxHealth);
