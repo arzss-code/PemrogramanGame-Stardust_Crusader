@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class LevelController : MonoBehaviour
 {
@@ -27,6 +29,9 @@ public class LevelController : MonoBehaviour
     [Header("Boss Settings")]
     [SerializeField] private GameObject bossPrefab;
     [SerializeField] private Transform bossSpawnPoint;
+    [SerializeField] private BoxCollider2D bossBattleArea;
+    [SerializeField] private Slider bossHealthSlider;
+    [SerializeField] private TextMeshProUGUI bossHealthText;
     private bool bossSpawned = false;
 
     private int currentWaveIndex = 0;
@@ -44,8 +49,12 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     {
+        if (bossHealthSlider != null)
+            bossHealthSlider.gameObject.SetActive(false); // Optional extra safety
+
         StartCoroutine(StartAfterObstacleSpawner());
     }
+
 
     private IEnumerator StartAfterObstacleSpawner()
     {
@@ -107,7 +116,6 @@ public class LevelController : MonoBehaviour
 
             yield return new WaitUntil(() => activeEnemies.Count == 0);
 
-            // Tampilkan warning SEBELUM Boss muncul
             UIWarningController warningController = FindObjectOfType<UIWarningController>();
             if (warningController != null)
             {
@@ -117,11 +125,19 @@ public class LevelController : MonoBehaviour
                 yield return new WaitForSeconds(warningDuration);
             }
 
-            // Munculkan Boss
             if (!bossSpawned && bossPrefab != null && bossSpawnPoint != null)
             {
                 Debug.Log("👹 Secret Boss muncul!");
-                Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
+                GameObject boss = Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
+
+                Boss1Controller bossScript = boss.GetComponent<Boss1Controller>();
+                if (bossScript != null)
+                {
+                    bossScript.battleArea = bossBattleArea;
+                    bossScript.bossHealthSlider = bossHealthSlider;
+                    bossScript.bossHealthText = bossHealthText;
+                }
+
                 bossSpawned = true;
             }
 
