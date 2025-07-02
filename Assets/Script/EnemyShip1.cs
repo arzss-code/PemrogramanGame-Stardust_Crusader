@@ -29,6 +29,11 @@ public class EnemyShip1 : MonoBehaviour
     [SerializeField] private int maxHealth = 3;
     private int currentHealth;
 
+    [Header("Hit Effect")]
+    [SerializeField] private Material whiteMaterial;
+    private Material defaultMaterial;
+    private SpriteRenderer spriteRenderer;
+
     private Rigidbody2D rb;
     private Collider2D col;
     private Vector2 formationTargetPosition;
@@ -42,11 +47,14 @@ public class EnemyShip1 : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         col.enabled = false;
         StartCoroutine(EnableColliderAfterDelay(colliderDelay));
 
-        currentHealth = maxHealth;
+        if (spriteRenderer != null)
+            defaultMaterial = spriteRenderer.material;
 
+        currentHealth = maxHealth;
         formationTargetPosition = (Vector2)transform.position + formationPositionOffset;
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -70,14 +78,6 @@ public class EnemyShip1 : MonoBehaviour
         if (obstacleSpawner != null)
         {
             yield return new WaitUntil(() => obstacleSpawner.finishedSpawning);
-
-            // Menjalankan warning dari controller UI global (hanya satu kali)
-            UIWarningController warningController = FindObjectOfType<UIWarningController>();
-            if (warningController != null)
-            {
-                warningController.ShowWarning(3f);
-            }
-
             yield return new WaitForSeconds(3f);
         }
 
@@ -173,9 +173,22 @@ public class EnemyShip1 : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         currentHealth -= damageAmount;
+
+        if (whiteMaterial != null && spriteRenderer != null)
+        {
+            StartCoroutine(FlashHitEffect());
+        }
+
         if (currentHealth <= 0)
         {
             Destroy(gameObject);
         }
+    }
+
+    private IEnumerator FlashHitEffect()
+    {
+        spriteRenderer.material = whiteMaterial;
+        yield return new WaitForSeconds(0.1f);
+        spriteRenderer.material = defaultMaterial;
     }
 }

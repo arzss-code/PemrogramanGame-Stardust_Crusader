@@ -12,6 +12,7 @@ public class LevelController : MonoBehaviour
         public GameObject prefab;
         public float spawnInterval = 1f;
         public int spawnCount = 5;
+        public float initialDelay = 0f;
     }
 
     [Header("Wave Settings")]
@@ -22,6 +23,11 @@ public class LevelController : MonoBehaviour
     [Header("Dependency")]
     [SerializeField] private ObjectSpawner obstacleSpawner;
     [SerializeField] private float delayBeforeEnemyWave = 3f;
+
+    [Header("Boss Settings")]
+    [SerializeField] private GameObject bossPrefab;
+    [SerializeField] private Transform bossSpawnPoint;
+    private bool bossSpawned = false;
 
     private int currentWaveIndex = 0;
     private int spawnedInCurrentWave = 0;
@@ -50,33 +56,79 @@ public class LevelController : MonoBehaviour
             Debug.Log("✅ ObjectSpawner selesai!");
         }
 
-        Debug.Log($"⏱ Delay {delayBeforeEnemyWave} detik sebelum musuh wave dimulai...");
+        Debug.Log($"⏱ Delay {delayBeforeEnemyWave} detik sebelum wave pertama dimulai...");
         yield return new WaitForSeconds(delayBeforeEnemyWave);
 
-        waveActive = true;
+        StartCoroutine(StartWave(currentWaveIndex));
     }
 
     private void Update()
     {
-        if (!waveActive || waves.Count == 0 || waitingForNextWave) return;
+        if (!waveActive || waitingForNextWave || currentWaveIndex >= waves.Count) return;
 
         Wave currentWave = waves[currentWaveIndex];
         spawnTimer += Time.deltaTime;
 
-        if (spawnTimer >= currentWave.spawnInterval)
+        if (spawnedInCurrentWave < currentWave.spawnCount && spawnTimer >= currentWave.spawnInterval)
         {
             spawnTimer = 0f;
-
-            if (spawnedInCurrentWave < currentWave.spawnCount)
-            {
-                Spawn(currentWave);
-                spawnedInCurrentWave++;
-            }
-            else if (activeEnemies.Count == 0)
-            {
-                StartCoroutine(WaitAndStartNextWave());
-            }
+            Spawn(currentWave);
+            spawnedInCurrentWave++;
         }
+        else if (spawnedInCurrentWave >= currentWave.spawnCount && activeEnemies.Count == 0)
+        {
+            StartCoroutine(WaitAndStartNextWave());
+        }
+    }
+
+    private IEnumerator StartWave(int waveIndex)
+    {
+        if (waveIndex >= waves.Count) yield break;
+
+        Wave wave = waves[waveIndex];
+        yield return new WaitForSeconds(wave.initialDelay);
+
+        Debug.Log($"🚀 Memulai wave {waveIndex}");
+        waveActive = true;
+        waitingForNextWave = false;
+        spawnTimer = 0f;
+        spawnedInCurrentWave = 0;
+    }
+
+    private IEnumerator WaitAndStartNextWave()
+    {
+        waitingForNextWave = true;
+        waveActive = false;
+
+        currentWaveIndex++;
+        if (currentWaveIndex >= waves.Count)
+        {
+            Debug.Log("✅ Semua wave selesai! Menunggu musuh terakhir dihancurkan...");
+
+            yield return new WaitUntil(() => activeEnemies.Count == 0);
+
+            // Tampilkan warning SEBELUM Boss muncul
+            UIWarningController warningController = FindObjectOfType<UIWarningController>();
+            if (warningController != null)
+            {
+                float warningDuration = 2f;
+                warningController.ShowWarning(warningDuration);
+                Debug.Log("⚠️ Menampilkan Warning untuk Boss...");
+                yield return new WaitForSeconds(warningDuration);
+            }
+
+            // Munculkan Boss
+            if (!bossSpawned && bossPrefab != null && bossSpawnPoint != null)
+            {
+                Debug.Log("👹 Secret Boss muncul!");
+                Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
+                bossSpawned = true;
+            }
+
+            yield break;
+        }
+
+        yield return StartCoroutine(StartWave(currentWaveIndex));
     }
 
     private void Spawn(Wave wave)
@@ -84,6 +136,7 @@ public class LevelController : MonoBehaviour
         Vector2 spawnPosition = RandomSpawnPoint();
         GameObject enemy = Instantiate(wave.prefab, spawnPosition, Quaternion.identity);
         activeEnemies.Add(enemy);
+
         EnemyDespawn despawn = enemy.AddComponent<EnemyDespawn>();
         despawn.onDespawn += () => activeEnemies.Remove(enemy);
     }
@@ -92,23 +145,6 @@ public class LevelController : MonoBehaviour
     {
         float randomY = Random.Range(spawn1.position.y, spawn2.position.y);
         return new Vector2(spawn1.position.x, randomY);
-    }
-
-    private IEnumerator WaitAndStartNextWave()
-    {
-        waitingForNextWave = true;
-        yield return new WaitForSeconds(1f);
-
-        currentWaveIndex++;
-        spawnedInCurrentWave = 0;
-
-        if (currentWaveIndex >= waves.Count)
-        {
-            Debug.Log("🚀 Semua wave musuh selesai!");
-            waveActive = false;
-        }
-
-        waitingForNextWave = false;
     }
 }
 

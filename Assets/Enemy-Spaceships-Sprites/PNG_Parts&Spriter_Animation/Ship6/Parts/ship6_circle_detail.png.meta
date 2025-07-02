@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ship6_circle_detail_0: 4327682511013220208
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
