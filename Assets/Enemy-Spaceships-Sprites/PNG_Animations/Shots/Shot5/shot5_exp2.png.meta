@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      shot5_exp2_0: 978179636737990676
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
