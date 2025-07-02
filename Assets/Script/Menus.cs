@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class Menus : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class Menus : MonoBehaviour
     public Button settingsButton;
     public Button backButton;
     
+    [Header("Score Display")]
+    public TMP_Text highScoreDisplay;
+
     private void Start()
     {
         // Initialize dropdown if it exists
@@ -22,6 +26,18 @@ public class Menus : MonoBehaviour
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(false);
+        }
+        
+        // Display high score
+        DisplayHighScore();
+    }
+    
+    private void DisplayHighScore()
+    {
+        if (highScoreDisplay != null && ScoreManager.instance != null)
+        {
+            int highScore = ScoreManager.instance.GetHighScore();
+            highScoreDisplay.text = "High Score: " + highScore.ToString("N0");
         }
     }
     
@@ -50,6 +66,12 @@ public class Menus : MonoBehaviour
     // Panggil fungsi ini saat tombol Play ditekan
     public void PlayGame()
     {
+        // Reset score when starting new game
+        if (ScoreManager.instance != null)
+        {
+            ScoreManager.instance.ResetScore();
+        }
+        
         SceneManager.LoadScene("Level1"); // Ganti dengan nama scene utama kamu
     }
 

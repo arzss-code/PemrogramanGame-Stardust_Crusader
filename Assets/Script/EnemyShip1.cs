@@ -28,6 +28,10 @@ public class EnemyShip1 : MonoBehaviour
     [Header("Health Settings")]
     [SerializeField] private int maxHealth = 3;
     private int currentHealth;
+    
+    [Header("Score Settings")]
+    [SerializeField] private int scoreValue = 100;
+    [SerializeField] private string enemyType = "Enemy Ship";
 
     [Header("Hit Effect")]
     [SerializeField] private Material whiteMaterial;
@@ -181,6 +185,12 @@ public class EnemyShip1 : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            // Give score when enemy dies
+            if (ScoreManager.instance != null)
+            {
+                ScoreManager.instance.AddEnemyKillScore(enemyType);
+            }
+            
             Destroy(gameObject);
         }
     }

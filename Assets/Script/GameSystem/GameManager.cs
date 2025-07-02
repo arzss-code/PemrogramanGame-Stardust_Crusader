@@ -32,6 +32,12 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Level Selesai! Memuat level berikutnya...");
 
+        // Add level complete bonus score
+        if (ScoreManager.instance != null)
+        {
+            ScoreManager.instance.AddLevelCompleteScore();
+        }
+
         // Mendapatkan nomor index dari scene yang sedang berjalan saat ini.
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
@@ -58,6 +64,13 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         Debug.Log("GAME OVER");
+        
+        // Stop scoring when game is over
+        if (ScoreManager.instance != null)
+        {
+            ScoreManager.instance.StopScoring();
+        }
+        
         // Ganti "GameOverScene" dengan nama scene "Game Over" yang sudah Anda buat.
         // Pastikan scene tersebut juga sudah didaftarkan di Build Settings.
         SceneManager.LoadScene("GameOverScene");
