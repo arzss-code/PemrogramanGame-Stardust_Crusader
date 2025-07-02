@@ -3341,6 +3341,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1832640439322348888, guid: 54c87cd6a88ed4d43ae28f3a80e5f36d, type: 3}
+      propertyPath: survivalScorePerSecond
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2508844957036769344, guid: 54c87cd6a88ed4d43ae28f3a80e5f36d, type: 3}
       propertyPath: m_Name
       value: ScoreManager

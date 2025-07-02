@@ -16,7 +16,6 @@ public class ScoreDisplay : MonoBehaviour
     public AudioClip scoreSound;
     
     private int displayedScore = 0;
-    private Coroutine scoreCountUpCoroutine;
     
     private void Start()
     {
@@ -45,37 +44,12 @@ public class ScoreDisplay : MonoBehaviour
     
     private void OnScoreChanged(int newScore)
     {
-        // Stop current count up if running
-        if (scoreCountUpCoroutine != null)
-        {
-            StopCoroutine(scoreCountUpCoroutine);
-        }
-        
-        // Start count up animation
-        scoreCountUpCoroutine = StartCoroutine(CountUpScore(displayedScore, newScore));
+        // Instant update - no animation
+        displayedScore = newScore;
+        UpdateScoreDisplay();
         
         // Play effects
         PlayScoreEffects();
-    }
-    
-    private IEnumerator CountUpScore(int startScore, int targetScore)
-    {
-        float duration = 0.5f;
-        float elapsedTime = 0f;
-        
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float progress = elapsedTime / duration;
-            
-            displayedScore = Mathf.RoundToInt(Mathf.Lerp(startScore, targetScore, progress));
-            UpdateScoreDisplay();
-            
-            yield return null;
-        }
-        
-        displayedScore = targetScore;
-        UpdateScoreDisplay();
     }
     
     private void UpdateScoreDisplay()

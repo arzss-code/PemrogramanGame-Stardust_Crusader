@@ -9,7 +9,6 @@ public class ScoreManager : MonoBehaviour
     public int currentScore = 0;
     public int enemyKillScore = 100;
     public int powerUpScore = 50;
-    public int obstacleAvoidScore = 25; // Score untuk menghindari obstacle
     public int obstacleDestroyScore = 35; // Score untuk menghancurkan obstacle
     public int survivalScorePerSecond = 10;
     public int levelCompleteBonus = 1000;
@@ -101,12 +100,6 @@ public class ScoreManager : MonoBehaviour
     public void AddPowerUpScore()
     {
         AddScore(powerUpScore, "Power-Up");
-    }
-    
-    // Skor untuk menghindari obstacle
-    public void AddObstacleAvoidScore(string obstacleType = "Obstacle")
-    {
-        AddScore(obstacleAvoidScore, $"{obstacleType} Avoided");
     }
     
     // Skor untuk menghancurkan obstacle
