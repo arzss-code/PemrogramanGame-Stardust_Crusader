@@ -18,6 +18,15 @@ public class Asteroids : MonoBehaviour
 
     [Header("Collider Delay")]
     [SerializeField] private float colliderDelay = 1f;
+    
+    [Header("Score Settings")]
+    [SerializeField] private int avoidanceScore = 25;
+    [SerializeField] private int destroyScore = 35;
+    [SerializeField] private string obstacleType = "Asteroid";
+    
+    private bool hasPassedPlayer = false;
+    private bool playerHit = false;
+    private bool wasDestroyed = false;
 
     void Start()
     {
@@ -48,9 +57,27 @@ public class Asteroids : MonoBehaviour
         float moveX = (GameManager.instance.worldSpeed * PlayerController.instance.BoostMultiplier) * Time.deltaTime;
         transform.position += new Vector3(-moveX, 0);
 
+        // Check if asteroid has passed the player without hitting them
+        CheckObstacleAvoidance();
+
         if (transform.position.x < -60f)
         {
             Destroy(gameObject);
+        }
+    }
+    
+    private void CheckObstacleAvoidance()
+    {
+        // Check if asteroid has passed player position (player is usually around x=0 to x=-10)
+        if (!hasPassedPlayer && !playerHit && !wasDestroyed && transform.position.x < -15f)
+        {
+            hasPassedPlayer = true;
+            
+            // Give score for successfully avoiding the obstacle
+            if (ScoreManager.instance != null)
+            {
+                ScoreManager.instance.AddObstacleAvoidScore(obstacleType);
+            }
         }
     }
 
@@ -58,6 +85,8 @@ public class Asteroids : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            playerHit = true; // Mark that player was hit, so no avoidance score
+            
             PlayerController player = other.GetComponent<PlayerController>();
             if (player != null)
             {
@@ -74,6 +103,13 @@ public class Asteroids : MonoBehaviour
 
     private void DestroyAsteroid()
     {
+        // Give score for destroying obstacle if it wasn't already destroyed
+        if (!wasDestroyed && ScoreManager.instance != null)
+        {
+            ScoreManager.instance.AddObstacleDestroyScore(obstacleType);
+            wasDestroyed = true;
+        }
+        
         if (destroyEffect != null)
         {
             GameObject effect = Instantiate(destroyEffect, transform.position, Quaternion.identity);

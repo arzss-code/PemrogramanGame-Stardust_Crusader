@@ -15,6 +15,10 @@ public class PowerUpItem : MonoBehaviour
     [Header("Effects")]
     [Tooltip("Efek partikel yang muncul saat item diambil (opsional)")]
     public GameObject pickupEffect;
+    
+    [Header("Score Settings")]
+    [Tooltip("Skor yang diberikan saat power-up diambil")]
+    public int scoreValue = 50;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -44,6 +48,12 @@ public class PowerUpItem : MonoBehaviour
             if (pickupEffect != null)
             {
                 Instantiate(pickupEffect, transform.position, Quaternion.identity);
+            }
+
+            // Add score for picking up power-up
+            if (ScoreManager.instance != null)
+            {
+                ScoreManager.instance.AddPowerUpScore();
             }
 
             // Hancurkan objek item setelah diambil
