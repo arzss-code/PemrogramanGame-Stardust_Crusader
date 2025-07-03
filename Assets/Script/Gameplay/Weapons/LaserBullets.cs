@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LaserBullets : MonoBehaviour
 {
@@ -17,54 +17,60 @@ public class LaserBullets : MonoBehaviour
     {
         transform.position += (Vector3)(moveDirection * bulletSpeed * Time.deltaTime);
 
-        if (transform.position.x > 55)
+        if (transform.position.x > 55) // batas luar layar kanan
         {
             Destroy(gameObject);
         }
     }
 
-    // Mengganti OnCollisionEnter2D menjadi OnTriggerEnter2D
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Jika mengenai obstacle
+        // 🚫 Obstacle
         if (other.CompareTag("obstacle"))
         {
-            // Hancurkan peluru
             Destroy(gameObject);
-            return; // Keluar dari fungsi agar tidak menjalankan kode di bawahnya
+            return;
         }
 
-        // // Jika mengenai Asteroid
-        // if (other.CompareTag("Asteroid"))
-        // {
-        //     // Ambil komponen script Asteroids dari objek yang ditabrak
-        //     Asteroids asteroid = other.GetComponent<Asteroids>();
-        //     if (asteroid != null)
-        //     {
-        //         // Panggil fungsi TakeDamage pada asteroid
-        //         // (Kita akan upgrade sedikit script Asteroid agar bisa menerima damage)
-        //         asteroid.TakeDamage((int)this.bulletDamage);
-        //     }
-            
-        //     // Hancurkan peluru setelah mengenai asteroid
-        //     Destroy(gameObject);
-        //     return;
-        // }
-
-        // Jika mengenai Boss
-        if (other.CompareTag("Boss"))
+        // 🎯 Kena Shield duluan
+        if (other.CompareTag("EnemyShield"))
         {
-            // Ambil komponen script BossController
-            BossController boss = other.GetComponent<BossController>();
-            if (boss != null)
+            EnemyShield shield = other.GetComponent<EnemyShield>();
+            if (shield != null)
             {
-                // Panggil fungsi TakeDamage pada boss dengan damage dari peluru ini
-                boss.TakeDamage((int)this.bulletDamage);
+                int remainingDamage = shield.AbsorbDamage((int)bulletDamage);
+
+                if (remainingDamage <= 0)
+                {
+                    Destroy(gameObject); // Damage sudah habis ke shield
+                    return;
+                }
+
+                // Damage tersisa? Cari EnemyShip3 (parent dari shield)
+                EnemyShip3 enemy = other.GetComponentInParent<EnemyShip3>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(remainingDamage);
+                }
+
+                Destroy(gameObject);
+                return;
             }
-            
-            // Hancurkan peluru setelah mengenai boss
+        }
+
+        // 🎯 Langsung ke musuh (jika shield sudah hancur)
+        if (other.CompareTag("enemy"))
+        {
+            EnemyShip3 enemy = other.GetComponent<EnemyShip3>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage((int)bulletDamage);
+            }
+
             Destroy(gameObject);
             return;
         }
     }
+
+
 }
