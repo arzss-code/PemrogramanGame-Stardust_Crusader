@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour
 {
@@ -32,6 +33,17 @@ public class LevelController : MonoBehaviour
     [SerializeField] private Slider bossHealthSlider;
     [SerializeField] private TextMeshProUGUI bossHealthText;
 
+    [Header("Audio")]
+    [Tooltip("Musik latar yang diputar selama wave musuh biasa.")]
+    [SerializeField] private AudioClip levelBGM;
+    [Tooltip("Musik latar yang diputar saat bos muncul.")]
+    [SerializeField] private AudioClip bossBGM;
+
+    [Header("Level Flow")]
+    [Tooltip("Nama scene yang akan dimuat setelah bos dikalahkan. Pastikan nama ini ada di Build Settings.")]
+    [SerializeField] private string nextLevelSceneName;
+    [SerializeField] private float delayBeforeNextLevel = 3f;
+
     private bool bossSpawned = false;
     private int currentWaveIndex = 0;
     private int spawnedInCurrentWave = 0;
@@ -54,6 +66,10 @@ public class LevelController : MonoBehaviour
     public void BeginLevel()
     {
         Debug.Log("🟢 BeginLevel dipanggil dari LevelIntroManager!");
+        if (AudioManager.instance != null && levelBGM != null)
+        {
+            AudioManager.instance.ChangeBGM(levelBGM);
+        }
         StartCoroutine(BeginWavesAfterDelay());
     }
 
@@ -120,6 +136,11 @@ public class LevelController : MonoBehaviour
                 Debug.Log("⚠️ Menampilkan Warning untuk Boss...");
                 yield return new WaitForSeconds(warningDuration);
             }
+            // Ganti musik ke BGM bos
+            if (AudioManager.instance != null && bossBGM != null)
+            {
+                AudioManager.instance.ChangeBGM(bossBGM);
+            }
 
             if (!bossSpawned && bossPrefab != null && bossSpawnPoint != null)
             {
@@ -129,9 +150,7 @@ public class LevelController : MonoBehaviour
                 Boss1Controller bossScript = boss.GetComponent<Boss1Controller>();
                 if (bossScript != null)
                 {
-                    bossScript.battleArea = bossBattleArea;
-                    bossScript.bossHealthSlider = bossHealthSlider;
-                    bossScript.bossHealthText = bossHealthText;
+                    bossScript.Initialize(bossBattleArea, bossHealthSlider, bossHealthText);
                 }
 
                 bossSpawned = true;
@@ -141,6 +160,25 @@ public class LevelController : MonoBehaviour
         }
 
         yield return StartCoroutine(StartWave(currentWaveIndex));
+    }
+
+    public void OnBossDefeated()
+    {
+        Debug.Log("🏆 Boss dikalahkan! Mempersiapkan level selanjutnya...");
+        if (!string.IsNullOrEmpty(nextLevelSceneName))
+        {
+            StartCoroutine(LoadNextLevelAfterDelay());
+        }
+        else
+        {
+            Debug.LogWarning("Nama scene level selanjutnya belum diatur di LevelController!");
+        }
+    }
+
+    private IEnumerator LoadNextLevelAfterDelay()
+    {
+        yield return new WaitForSeconds(delayBeforeNextLevel);
+        SceneManager.LoadScene(nextLevelSceneName);
     }
 
     private void Spawn(Wave wave)

@@ -26,45 +26,21 @@ public class LaserBullets : MonoBehaviour
     // Mengganti OnCollisionEnter2D menjadi OnTriggerEnter2D
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Jika mengenai obstacle
-        if (other.CompareTag("obstacle"))
+        // Cek apakah objek yang terkena bisa menerima damage
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            // Hancurkan peluru
-            Destroy(gameObject);
-            return; // Keluar dari fungsi agar tidak menjalankan kode di bawahnya
-        }
-
-        // // Jika mengenai Asteroid
-        // if (other.CompareTag("Asteroid"))
-        // {
-        //     // Ambil komponen script Asteroids dari objek yang ditabrak
-        //     Asteroids asteroid = other.GetComponent<Asteroids>();
-        //     if (asteroid != null)
-        //     {
-        //         // Panggil fungsi TakeDamage pada asteroid
-        //         // (Kita akan upgrade sedikit script Asteroid agar bisa menerima damage)
-        //         asteroid.TakeDamage((int)this.bulletDamage);
-        //     }
-            
-        //     // Hancurkan peluru setelah mengenai asteroid
-        //     Destroy(gameObject);
-        //     return;
-        // }
-
-        // Jika mengenai Boss
-        if (other.CompareTag("Boss"))
-        {
-            // Ambil komponen script BossController
-            BossController boss = other.GetComponent<BossController>();
-            if (boss != null)
-            {
-                // Panggil fungsi TakeDamage pada boss dengan damage dari peluru ini
-                boss.TakeDamage((int)this.bulletDamage);
-            }
-            
-            // Hancurkan peluru setelah mengenai boss
+            // Berikan damage sesuai damage peluru
+            damageable.TakeDamage((int)this.bulletDamage);
+            // Hancurkan peluru setelah mengenai target
             Destroy(gameObject);
             return;
+        }
+
+        // Jika mengenai obstacle, hancurkan peluru saja
+        if (other.CompareTag("obstacle"))
+        {
+            Destroy(gameObject);
         }
     }
 }

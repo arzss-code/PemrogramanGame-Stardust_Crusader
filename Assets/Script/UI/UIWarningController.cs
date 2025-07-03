@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIWarningController : MonoBehaviour
 {
@@ -56,12 +57,6 @@ public class UIWarningController : MonoBehaviour
         cg.alpha = 0;
 
         flashCoroutine = StartCoroutine(FlashRoutine(currentInstance, cg, usedDuration));
-
-        // 🔊 Ganti BGM ke Boss BGM
-        if (AudioManager.instance != null)
-        {
-            StartCoroutine(SwitchToBossBGM());
-        }
     }
 
     public void HideWarning()
@@ -93,22 +88,5 @@ public class UIWarningController : MonoBehaviour
         }
 
         HideWarning();
-    }
-
-    private IEnumerator SwitchToBossBGM()
-    {
-        AudioManager audio = AudioManager.instance;
-
-        // Fade out BGM sekarang
-        audio.FadeOutBGM(1.5f);
-
-        // Tunggu sebelum ganti
-        yield return new WaitForSeconds(1.5f);
-
-        if (audio.bossBGM != null)
-        {
-            audio.ChangeBGM(audio.bossBGM);
-            audio.FadeInBGM(1.5f, 0.7f); // Volume boss, bisa kamu sesuaikan
-        }
     }
 }

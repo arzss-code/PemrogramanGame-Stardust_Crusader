@@ -4,13 +4,15 @@ using System.Collections;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-    
+
     public AudioSource sfxSource;
     public AudioSource bgmSource;
 
-    public AudioClip buttonClickSFX;
-    public AudioClip bgmClip;
-    public AudioClip bossBGM; // Tambahan untuk Boss BGM
+    [Header("SFX")]
+    [SerializeField] private AudioClip buttonClickSFX;
+
+    private Coroutine m_MusicFadeCoroutine;
+    private float m_TargetBGMVolume = 1.0f;
 
     private void Awake()
     {
@@ -23,26 +25,17 @@ public class AudioManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return; // Hentikan eksekusi lebih lanjut jika ini adalah duplikat
         }
-    }
 
-    private void Start()
-    {
-        if (bgmSource != null && bgmClip != null)
+        // Inisialisasi volume BGM dari PlayerPrefs
+        m_TargetBGMVolume = PlayerPrefs.GetFloat("BGMVolume", 1.0f);
+        if (bgmSource != null)
         {
-            if (bgmSource.clip == null) // hanya set jika belum ada
-            {
-                bgmSource.clip = bgmClip;
-                bgmSource.loop = true;
-
-                float savedVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
-                bgmSource.volume = savedVolume;
-
-                bgmSource.Play();
-            }
+            bgmSource.volume = m_TargetBGMVolume;
+            bgmSource.loop = true;
         }
     }
-
 
     // Function untuk play sfx
     public void PlaySFX()
@@ -56,15 +49,17 @@ public class AudioManager : MonoBehaviour
     // Function untuk atur volume BGM
     public void SetBGMVolume(float value)
     {
-        if (bgmSource == null)
+        m_TargetBGMVolume = Mathf.Clamp01(value);
+
+        // Jika tidak sedang dalam proses fade, langsung atur volume
+        if (bgmSource != null && m_MusicFadeCoroutine == null)
         {
-            Debug.LogWarning("BGM Source hilang atau sudah dihancurkan.");
-            return;
+            bgmSource.volume = m_TargetBGMVolume;
         }
 
-        bgmSource.volume = value;
+        PlayerPrefs.SetFloat("BGMVolume", m_TargetBGMVolume);
+        PlayerPrefs.Save();
     }
-
 
 
     // Function untuk mute/unmute BGM
@@ -76,57 +71,55 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void ChangeBGM(AudioClip newClip)
+    /// <summary>
+    /// Mengganti BGM yang sedang diputar dengan klip baru menggunakan efek fade.
+    /// </summary>
+    /// <param name="newClip">Klip musik baru yang akan diputar.</param>
+    /// <param name="fadeDuration">Durasi total untuk fade out dan fade in.</param>
+    public void ChangeBGM(AudioClip newClip, float fadeDuration = 2.0f)
     {
         if (bgmSource == null || newClip == null) return;
+        if (bgmSource.clip == newClip && bgmSource.isPlaying) return; // Jangan ganti jika klip sudah sama dan sedang diputar
 
-        if (bgmSource.clip == newClip) return; // sudah dipakai
+        if (m_MusicFadeCoroutine != null)
+            StopCoroutine(m_MusicFadeCoroutine);
 
+        m_MusicFadeCoroutine = StartCoroutine(FadeSwitchBGM(newClip, fadeDuration));
+    }
+
+    private IEnumerator FadeSwitchBGM(AudioClip newClip, float duration)
+    {
+        float startVolume = bgmSource.volume;
+        float fadeOutDuration = bgmSource.isPlaying ? duration / 2f : 0f;
+        float fadeInDuration = duration / 2f;
+        float timer = 0f;
+
+        // --- FADE OUT ---
+        if (fadeOutDuration > 0)
+        {
+            while (timer < fadeOutDuration)
+            {
+                bgmSource.volume = Mathf.Lerp(startVolume, 0f, timer / fadeOutDuration);
+                timer += Time.unscaledDeltaTime; // Gunakan unscaledDeltaTime agar fade tetap berjalan saat game di-pause
+                yield return null;
+            }
+        }
+
+        // --- GANTI KLIP ---
         bgmSource.Stop();
         bgmSource.clip = newClip;
         bgmSource.Play();
-    }
-    public void FadeOutBGM(float duration)
-    {
-        if (bgmSource != null)
-            StartCoroutine(FadeOut(bgmSource, duration));
-    }
 
-    public void FadeInBGM(float duration, float targetVolume = 1f)
-    {
-        if (bgmSource != null)
-            StartCoroutine(FadeIn(bgmSource, duration, targetVolume));
-    }
-
-    private IEnumerator FadeOut(AudioSource source, float duration)
-    {
-        float startVolume = source.volume;
-        float time = 0f;
-        while (time < duration)
+        // --- FADE IN ---
+        timer = 0f;
+        while (timer < fadeInDuration)
         {
-            time += Time.deltaTime;
-            source.volume = Mathf.Lerp(startVolume, 0f, time / duration);
+            bgmSource.volume = Mathf.Lerp(0f, m_TargetBGMVolume, timer / fadeInDuration);
+            timer += Time.unscaledDeltaTime;
             yield return null;
         }
 
-        source.volume = 0f;
-        source.Stop();
+        bgmSource.volume = m_TargetBGMVolume;
+        m_MusicFadeCoroutine = null;
     }
-
-    private IEnumerator FadeIn(AudioSource source, float duration, float targetVolume)
-    {
-        float time = 0f;
-        source.volume = 0f;
-        source.Play();
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            source.volume = Mathf.Lerp(0f, targetVolume, time / duration);
-            yield return null;
-        }
-
-        source.volume = targetVolume;
-    }
-
-
 }

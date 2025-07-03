@@ -542,6 +542,10 @@ MonoBehaviour:
   bossBattleArea: {fileID: 676291947}
   bossHealthSlider: {fileID: 818125916}
   bossHealthText: {fileID: 900027508}
+  levelBGM: {fileID: 8300000, guid: 0a333d00399e53b4ea8cd4adf93f04ac, type: 3}
+  bossBGM: {fileID: 8300000, guid: 137533fbf7da95545b881431a84c2885, type: 3}
+  nextLevelSceneName: Level2
+  delayBeforeNextLevel: 3
 --- !u!1001 &312167287
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6049,7 +6053,7 @@ Transform:
   m_GameObject: {fileID: 676291945}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.1, y: 0.4, z: 581.66925}
+  m_LocalPosition: {x: 15.2, y: 0.4, z: 581.66925}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6089,7 +6093,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -40.9, y: 0}
+  m_Offset: {x: -10, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -6099,7 +6103,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 120, y: 47.86}
+  m_Size: {x: 100, y: 47.86}
   m_EdgeRadius: 0
 --- !u!1 &733545586
 GameObject:
@@ -6185,7 +6189,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 772449194}
-  - component: {fileID: 772449193}
+  - component: {fileID: 772449195}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -6193,23 +6197,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &772449193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 772449192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 874b4a963e37b4544b2bb4bfd42d8bee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  level1BGM: {fileID: 8300000, guid: 68750a3c7e546634eac908d9e81e5f73, type: 3}
-  level1Volume: 0.35
-  bossBGM: {fileID: 8300000, guid: 93038f5becab21149aa5ad867d0400e1, type: 3}
-  bossVolume: 0.6
-  volumeLerpSpeed: 1
 --- !u!4 &772449194
 Transform:
   m_ObjectHideFlags: 0
@@ -6225,6 +6212,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &772449195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772449192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3125568cd3a16734983b784c5972aeae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxSource: {fileID: 0}
+  bgmSource: {fileID: 0}
+  buttonClickSFX: {fileID: 0}
 --- !u!1 &802839319
 GameObject:
   m_ObjectHideFlags: 0
@@ -6543,7 +6545,7 @@ GameObject:
   - component: {fileID: 900027509}
   - component: {fileID: 900027508}
   m_Layer: 5
-  m_Name: Health Text
+  m_Name: Bos Health Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6711,16 +6713,18 @@ MonoBehaviour:
   waves:
   - waveName: Obstacle 1
     prefab: {fileID: 3207898793430442549, guid: b8c28a968fe7b4449a9024d3e561fff9, type: 3}
-    spawnInterval: 0.5
-    spawnCount: 100
+    spawnInterval: 5
+    spawnCount: 50
     loopForever: 1
     minDuration: 20
+    maxActiveObjects: 10
   - waveName: Obstacle 2
     prefab: {fileID: 3207898793430442549, guid: 2d7c5f7ad7b573049b0d9a161d1b11da, type: 3}
-    spawnInterval: 3
-    spawnCount: 50
+    spawnInterval: 8
+    spawnCount: 20
     loopForever: 0
     minDuration: 20
+    maxActiveObjects: 10
   spawn1: {fileID: 441824120}
   spawn2: {fileID: 1691987226}
   finishedSpawning: 0
@@ -7813,7 +7817,7 @@ Transform:
   m_GameObject: {fileID: 1633006600}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 58.2, y: -8.3, z: 581.66925}
+  m_LocalPosition: {x: 46.5, y: -8.3, z: 581.66925}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
