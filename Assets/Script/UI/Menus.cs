@@ -10,6 +10,7 @@ public class Menus : MonoBehaviour
     public Dropdown controlSchemeDropdown;
     public Button settingsButton;
     public Button backButton;
+    public GameObject creditsPanel;
     
     [Header("Score Display")]
     public TMP_Text highScoreDisplay;
@@ -28,6 +29,11 @@ public class Menus : MonoBehaviour
             settingsPanel.SetActive(false);
         }
         
+        if (creditsPanel != null) 
+        {
+            creditsPanel.SetActive(false);
+        }
+
         // Display high score
         DisplayHighScore();
     }
@@ -99,6 +105,22 @@ public class Menus : MonoBehaviour
         if (SettingsManager.instance != null)
         {
             SettingsManager.instance.SetControlScheme(value);
+        }
+    }
+
+    public void OpenCredits() 
+    {
+        if (creditsPanel != null)
+        {
+            creditsPanel.SetActive(true);
+        }
+    }
+
+    public void CloseCredits() 
+    {
+        if (creditsPanel != null)
+        {
+            creditsPanel.SetActive(false);
         }
     }
 
