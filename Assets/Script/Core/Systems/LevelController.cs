@@ -25,6 +25,8 @@ public class LevelController : MonoBehaviour
 
     [Header("Timing Settings")]
     [SerializeField] private float delayBeforeEnemyWave = 3f;
+    [Tooltip("Jeda waktu (detik) setelah wave terakhir selesai sebelum bos muncul.")]
+    [SerializeField] private float delayBeforeBoss = 10f;
 
     [Header("Boss Settings")]
     [SerializeField] private GameObject bossPrefab;
@@ -144,7 +146,7 @@ public class LevelController : MonoBehaviour
         {
             Debug.Log("✅ Semua wave selesai! Menunggu musuh terakhir dihancurkan...");
 
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(delayBeforeBoss);
             activeEnemies.Clear(); // optional backup
 
             UIWarningController warningController = FindObjectOfType<UIWarningController>();
@@ -184,20 +186,25 @@ public class LevelController : MonoBehaviour
     public void OnBossDefeated()
     {
         Debug.Log("🏆 Boss dikalahkan! Mempersiapkan level selanjutnya...");
-        if (!string.IsNullOrEmpty(nextLevelSceneName))
+        // Panggil GameManager untuk menangani logika penyelesaian level setelah jeda.
+        // Ini memastikan semua logika (skor, kenaikan level) dijalankan secara terpusat.
+        StartCoroutine(CompleteLevelAfterDelay());
+    }
+
+    /// <summary>
+    /// Menunggu beberapa detik sebelum memanggil GameManager untuk menyelesaikan level.
+    /// </summary>
+    private IEnumerator CompleteLevelAfterDelay()
+    {
+        yield return new WaitForSeconds(delayBeforeNextLevel);
+        if (GameManager.instance != null)
         {
-            StartCoroutine(LoadNextLevelAfterDelay());
+            GameManager.instance.LevelCompleted();
         }
         else
         {
-            Debug.LogWarning("Nama scene level selanjutnya belum diatur di LevelController!");
+            Debug.LogError("GameManager.instance tidak ditemukan! Tidak bisa melanjutkan ke level berikutnya.");
         }
-    }
-
-    private IEnumerator LoadNextLevelAfterDelay()
-    {
-        yield return new WaitForSeconds(delayBeforeNextLevel);
-        SceneManager.LoadScene(nextLevelSceneName);
     }
 
     private void Spawn(Wave wave)

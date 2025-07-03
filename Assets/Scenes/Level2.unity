@@ -537,13 +537,14 @@ MonoBehaviour:
   spawn1: {fileID: 1738038606}
   spawn2: {fileID: 1773302465}
   delayBeforeEnemyWave: 10
-  bossPrefab: {fileID: 8548432565571887721, guid: d884078ddc15fd94480103844fc17971, type: 3}
+  delayBeforeBoss: 10
+  bossPrefab: {fileID: 8548432565571887721, guid: ace093066e731c94bba12b8c8eed26ad, type: 3}
   bossSpawnPoint: {fileID: 1633006601}
   bossBattleArea: {fileID: 676291947}
   bossHealthSlider: {fileID: 818125916}
   bossHealthText: {fileID: 900027508}
-  levelBGM: {fileID: 8300000, guid: 0a333d00399e53b4ea8cd4adf93f04ac, type: 3}
-  bossBGM: {fileID: 8300000, guid: 137533fbf7da95545b881431a84c2885, type: 3}
+  levelBGM: {fileID: 8300000, guid: 9148f82c58de17c48ac14f8899096c4f, type: 3}
+  bossBGM: {fileID: 8300000, guid: 5aedd6f0bca1c134d83ab683f6a757c3, type: 3}
   nextLevelSceneName: Level3
   delayBeforeNextLevel: 3
 --- !u!1001 &312167287
@@ -6189,8 +6190,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 772449194}
-  - component: {fileID: 772449193}
   - component: {fileID: 772449195}
+  - component: {fileID: 772449196}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -6198,18 +6199,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &772449193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 772449192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 874b4a963e37b4544b2bb4bfd42d8bee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &772449194
 Transform:
   m_ObjectHideFlags: 0
@@ -6322,6 +6311,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &772449196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772449192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3125568cd3a16734983b784c5972aeae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxSource: {fileID: 0}
+  bgmSource: {fileID: 0}
+  mainMenuBGM: {fileID: 8300000, guid: 4746c5a27e3ff1749b06b8c252b7147a, type: 3}
+  buttonClickSFX: {fileID: 0}
 --- !u!1 &802839319
 GameObject:
   m_ObjectHideFlags: 0
