@@ -168,10 +168,24 @@ public class LevelController : MonoBehaviour
                 Debug.Log("👹 Secret Boss muncul!");
                 GameObject boss = Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
 
-                Boss1Controller bossScript = boss.GetComponent<Boss1Controller>();
-                if (bossScript != null)
+                // Coba inisialisasi sebagai Boss1Controller
+                var boss1 = boss.GetComponent<Boss1Controller>();
+                if (boss1 != null)
                 {
-                    bossScript.Initialize(bossBattleArea, bossHealthSlider, bossHealthText);
+                    boss1.Initialize(bossBattleArea, bossHealthSlider, bossHealthText);
+                }
+
+                // Coba inisialisasi sebagai Boss2Controller
+                var boss2 = boss.GetComponent<Boss2Controller>();
+                if (boss2 != null)
+                {
+                    boss2.Initialize(bossBattleArea, bossHealthSlider, bossHealthText);
+                }
+
+                // Jika tidak ada skrip bos yang cocok, beri peringatan.
+                if (boss1 == null && boss2 == null)
+                {
+                    Debug.LogWarning($"Prefab bos '{bossPrefab.name}' tidak memiliki skrip Boss1Controller atau Boss2Controller yang bisa diinisialisasi.", boss);
                 }
 
                 bossSpawned = true;

@@ -523,15 +523,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waves:
   - prefab: {fileID: 4816320124064259033, guid: 2d90d7e7edd42ba48bdec70c490654a5, type: 3}
-    spawnInterval: 4
-    spawnCount: 30
-    initialDelay: 10
-  - prefab: {fileID: 4816320124064259033, guid: 2d90d7e7edd42ba48bdec70c490654a5, type: 3}
     spawnInterval: 3
     spawnCount: 30
     initialDelay: 10
   - prefab: {fileID: 4816320124064259033, guid: 2d90d7e7edd42ba48bdec70c490654a5, type: 3}
     spawnInterval: 2
+    spawnCount: 30
+    initialDelay: 10
+  - prefab: {fileID: 4816320124064259033, guid: 2d90d7e7edd42ba48bdec70c490654a5, type: 3}
+    spawnInterval: 1
     spawnCount: 30
     initialDelay: 10
   spawn1: {fileID: 1738038606}

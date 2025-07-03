@@ -491,20 +491,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waves:
   - prefab: {fileID: 4816320124064259033, guid: d6e1e6c4a67779f4d81cfb18ede88623, type: 3}
+    spawnInterval: 3
+    spawnCount: 5
+    initialDelay: 10
+  - prefab: {fileID: 4816320124064259033, guid: d6e1e6c4a67779f4d81cfb18ede88623, type: 3}
+    spawnInterval: 2
+    spawnCount: 10
+    initialDelay: 10
+  - prefab: {fileID: 4816320124064259033, guid: d6e1e6c4a67779f4d81cfb18ede88623, type: 3}
     spawnInterval: 1
-    spawnCount: 20
-    initialDelay: 10
-  - prefab: {fileID: 4816320124064259033, guid: d6e1e6c4a67779f4d81cfb18ede88623, type: 3}
-    spawnInterval: 0.5
-    spawnCount: 20
-    initialDelay: 10
-  - prefab: {fileID: 4816320124064259033, guid: d6e1e6c4a67779f4d81cfb18ede88623, type: 3}
-    spawnInterval: 0.5
-    spawnCount: 20
+    spawnCount: 15
     initialDelay: 10
   spawn1: {fileID: 1738038606}
   spawn2: {fileID: 1773302465}
   delayBeforeEnemyWave: 10
+  delayBeforeBoss: 10
   bossPrefab: {fileID: 8548432565571887721, guid: 180aba3dc8b50b64b9262926718c64b0, type: 3}
   bossSpawnPoint: {fileID: 8041201008522554554, guid: 180aba3dc8b50b64b9262926718c64b0, type: 3}
   bossBattleArea: {fileID: 676291947}
