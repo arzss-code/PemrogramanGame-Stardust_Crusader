@@ -22,8 +22,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] private Transform spawn1;
     [SerializeField] private Transform spawn2;
 
-    [Header("Dependency")]
-    [SerializeField] private ObjectSpawner obstacleSpawner;
+    [Header("Timing Settings")]
     [SerializeField] private float delayBeforeEnemyWave = 3f;
 
     [Header("Boss Settings")]
@@ -32,8 +31,8 @@ public class LevelController : MonoBehaviour
     [SerializeField] private BoxCollider2D bossBattleArea;
     [SerializeField] private Slider bossHealthSlider;
     [SerializeField] private TextMeshProUGUI bossHealthText;
-    private bool bossSpawned = false;
 
+    private bool bossSpawned = false;
     private int currentWaveIndex = 0;
     private int spawnedInCurrentWave = 0;
     private float spawnTimer = 0f;
@@ -45,27 +44,22 @@ public class LevelController : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-    }
 
-    private void Start()
-    {
+        // Sembunyikan BossHealthBar di awal
         if (bossHealthSlider != null)
-            bossHealthSlider.gameObject.SetActive(false); // Optional extra safety
-
-        StartCoroutine(StartAfterObstacleSpawner());
+            bossHealthSlider.gameObject.SetActive(false);
     }
 
 
-    private IEnumerator StartAfterObstacleSpawner()
+    public void BeginLevel()
     {
-        if (obstacleSpawner != null)
-        {
-            Debug.Log("⏳ Menunggu ObjectSpawner selesai...");
-            yield return new WaitUntil(() => obstacleSpawner.finishedSpawning);
-            Debug.Log("✅ ObjectSpawner selesai!");
-        }
+        Debug.Log("🟢 BeginLevel dipanggil dari LevelIntroManager!");
+        StartCoroutine(BeginWavesAfterDelay());
+    }
 
-        Debug.Log($"⏱ Delay {delayBeforeEnemyWave} detik sebelum wave pertama dimulai...");
+    private IEnumerator BeginWavesAfterDelay()
+    {
+        Debug.Log($"⏱ Delay {delayBeforeEnemyWave} detik sebelum wave musuh dimulai...");
         yield return new WaitForSeconds(delayBeforeEnemyWave);
 
         StartCoroutine(StartWave(currentWaveIndex));
@@ -95,6 +89,7 @@ public class LevelController : MonoBehaviour
         if (waveIndex >= waves.Count) yield break;
 
         Wave wave = waves[waveIndex];
+        Debug.Log($"⏳ Initial delay {wave.initialDelay} detik untuk wave {waveIndex}");
         yield return new WaitForSeconds(wave.initialDelay);
 
         Debug.Log($"🚀 Memulai wave {waveIndex}");
@@ -114,7 +109,8 @@ public class LevelController : MonoBehaviour
         {
             Debug.Log("✅ Semua wave selesai! Menunggu musuh terakhir dihancurkan...");
 
-            yield return new WaitUntil(() => activeEnemies.Count == 0);
+            yield return new WaitForSeconds(10f);
+            activeEnemies.Clear(); // optional backup
 
             UIWarningController warningController = FindObjectOfType<UIWarningController>();
             if (warningController != null)
@@ -149,12 +145,18 @@ public class LevelController : MonoBehaviour
 
     private void Spawn(Wave wave)
     {
+        if (wave.prefab == null)
+        {
+            Debug.LogError($"❌ Wave {currentWaveIndex} tidak memiliki prefab yang valid!");
+            return;
+        }
+
         Vector2 spawnPosition = RandomSpawnPoint();
         GameObject enemy = Instantiate(wave.prefab, spawnPosition, Quaternion.identity);
         activeEnemies.Add(enemy);
 
-        EnemyDespawn despawn = enemy.AddComponent<EnemyDespawn>();
-        despawn.onDespawn += () => activeEnemies.Remove(enemy);
+        DespawnTracker tracker = enemy.AddComponent<DespawnTracker>();
+        tracker.Init(enemy, this);
     }
 
     private Vector2 RandomSpawnPoint()
@@ -162,14 +164,37 @@ public class LevelController : MonoBehaviour
         float randomY = Random.Range(spawn1.position.y, spawn2.position.y);
         return new Vector2(spawn1.position.x, randomY);
     }
-}
 
-public class EnemyDespawn : MonoBehaviour
-{
-    public System.Action onDespawn;
-
-    private void OnDestroy()
+    public void OnEnemyDespawn(GameObject enemy)
     {
-        onDespawn?.Invoke();
+        if (activeEnemies.Contains(enemy))
+        {
+            activeEnemies.Remove(enemy);
+            Debug.Log("☠️ Musuh dihapus dari activeEnemies");
+        }
+    }
+
+    private class DespawnTracker : MonoBehaviour
+    {
+        private GameObject enemyObj;
+        private LevelController levelController;
+
+        public void Init(GameObject enemy, LevelController controller)
+        {
+            enemyObj = enemy;
+            levelController = controller;
+        }
+
+        private void OnDestroy()
+        {
+            if (levelController != null)
+                levelController.OnEnemyDespawn(enemyObj);
+        }
+
+        private void OnBecameInvisible()
+        {
+            Debug.Log($"👋 Enemy {gameObject.name} menjadi invisible, dihancurkan.");
+            Destroy(gameObject);
+        }
     }
 }

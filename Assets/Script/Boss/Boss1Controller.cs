@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +24,11 @@ public class Boss1Controller : MonoBehaviour
     [SerializeField] private int maxHealth = 50;
     private int currentHealth;
 
+    [Header("Hit Flash Effect")]
+    [SerializeField] private Material mWhite;              // Material putih saat kena hit
+    private Material defaultMaterial;                      // Material default
+    private SpriteRenderer spriteRenderer;                 // Renderer untuk mengganti material
+
     // Internal
     private Transform player;
     private Rigidbody2D rb;
@@ -34,7 +39,14 @@ public class Boss1Controller : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>(); // ambil komponen Animator
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            defaultMaterial = spriteRenderer.material;
+        }
+
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
         currentHealth = maxHealth;
@@ -89,7 +101,6 @@ public class Boss1Controller : MonoBehaviour
             animator.SetTrigger("Dash");
         }
 
-        // Tampilkan efek dash jika tersedia
         if (dashEffectPrefab != null && dashEffectPoint != null)
         {
             GameObject dashEffect = Instantiate(dashEffectPrefab, dashEffectPoint.position, Quaternion.identity);
@@ -100,7 +111,6 @@ public class Boss1Controller : MonoBehaviour
 
         yield return new WaitUntil(() => transform.position.x < minBounds.x - 2f);
 
-        // Reposisi ke kanan
         Vector2 newPos = new Vector2(maxBounds.x + 2f, Random.Range(minBounds.y, maxBounds.y));
         transform.position = newPos;
         rb.linearVelocity = Vector2.zero;
@@ -113,6 +123,8 @@ public class Boss1Controller : MonoBehaviour
     {
         currentHealth -= damageAmount;
         UpdateHealthUI();
+
+        StartCoroutine(HitFlash()); // 🔥 Kedip putih
 
         if (animator != null)
         {
@@ -132,6 +144,16 @@ public class Boss1Controller : MonoBehaviour
             {
                 bossHealthSlider.gameObject.SetActive(false);
             }
+        }
+    }
+
+    private IEnumerator HitFlash()
+    {
+        if (spriteRenderer != null && mWhite != null)
+        {
+            spriteRenderer.material = mWhite;
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.material = defaultMaterial;
         }
     }
 
@@ -170,5 +192,14 @@ public class Boss1Controller : MonoBehaviour
             Destroy(other.gameObject);
             TakeDamage(1);
         }
+        else if (other.CompareTag("Player"))
+        {
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.TakeDamage(player.MaxHealth); // 🔥 Langsung habis
+            }
+        }
     }
+
 }

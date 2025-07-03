@@ -16,6 +16,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 lastMouseWorldPos;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip shootSFX;
+    private AudioSource audioSource;
+
     [Header("Shooting")]
     public float fireRate = 5f;
     private float nextFireTime = 0f;
@@ -29,12 +33,16 @@ public class PlayerController : MonoBehaviour
     [Header("Health")]
     [SerializeField] private int health = 5;
     [SerializeField] private int maxHealth = 5;
+    public int MaxHealth => maxHealth;
 
     [Header("Effects")]
     public ParticleSystem boostEffect;
 
     [Header("Death Effect")]
-    public GameObject deathEffect; // ➕ Tambahkan efek kematian
+    public GameObject deathEffect;
+
+    [Header("Cutscene Control")]
+    public bool isInCutscene = true;
 
     private Animator anim;
     private Rigidbody2D rb;
@@ -62,6 +70,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         lastMouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
@@ -69,7 +79,6 @@ public class PlayerController : MonoBehaviour
         defaultMaterial = spriteRenderer.material;
         energy = maxEnergy;
 
-        // Apply control scheme from settings
         if (SettingsManager.instance != null)
         {
             currentScheme = SettingsManager.instance.GetControlScheme();
@@ -81,10 +90,19 @@ public class PlayerController : MonoBehaviour
 
         if (boostEffect != null)
             boostEffect.Stop();
+
+        // Mulai cutscene animasi awal
+        StartCoroutine(PlayCutsceneIntro());
     }
 
     private void Update()
     {
+        if (isInCutscene)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         switch (currentScheme)
         {
             case ControlScheme.Keyboard:
@@ -169,6 +187,11 @@ public class PlayerController : MonoBehaviour
             nextFireTime = Time.time + 1f / fireRate;
             LaserWeapon.Instance.Shoot();
             lastShootTime = Time.time;
+
+            if (shootSFX != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(shootSFX);
+            }
         }
     }
 
@@ -265,7 +288,6 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Player Dead");
 
-            // ➕ Efek partikel kematian
             if (deathEffect != null)
             {
                 Instantiate(deathEffect, transform.position, Quaternion.identity);
@@ -275,10 +297,43 @@ public class PlayerController : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
+    public void Kill()
+    {
+        health = 0;
+        UIController.instance?.SetHealth(health);
+
+        if (deathEffect != null)
+        {
+            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        }
+
+        GameManager.instance.GameOver();
+        gameObject.SetActive(false);
+    }
 
     IEnumerator ResetMaterial()
     {
         yield return new WaitForSeconds(0.2f);
         spriteRenderer.material = defaultMaterial;
+    }
+
+    private IEnumerator PlayCutsceneIntro()
+    {
+        Vector3 startPos = new Vector3(-10f, transform.position.y, transform.position.z);
+        Vector3 targetPos = new Vector3(-6f, transform.position.y, transform.position.z);
+        transform.position = startPos;
+
+        float duration = 2.5f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPos, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        isInCutscene = false;
     }
 }

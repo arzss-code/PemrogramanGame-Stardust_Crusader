@@ -20,7 +20,6 @@ public class Asteroids : MonoBehaviour
     [SerializeField] private float colliderDelay = 1f;
     
     [Header("Score Settings")]
-    [SerializeField] private int avoidanceScore = 25;
     [SerializeField] private int destroyScore = 35;
     [SerializeField] private string obstacleType = "Asteroid";
     
@@ -57,8 +56,8 @@ public class Asteroids : MonoBehaviour
         float moveX = (GameManager.instance.worldSpeed * PlayerController.instance.BoostMultiplier) * Time.deltaTime;
         transform.position += new Vector3(-moveX, 0);
 
-        // Check if asteroid has passed the player without hitting them
-        CheckObstacleAvoidance();
+        // Check if asteroid has passed the player (no longer giving score for avoidance)
+        CheckPassPlayer();
 
         if (transform.position.x < -60f)
         {
@@ -66,18 +65,12 @@ public class Asteroids : MonoBehaviour
         }
     }
     
-    private void CheckObstacleAvoidance()
+    private void CheckPassPlayer()
     {
-        // Check if asteroid has passed player position (player is usually around x=0 to x=-10)
+        // Check if asteroid has passed player position (no scoring for avoidance anymore)
         if (!hasPassedPlayer && !playerHit && !wasDestroyed && transform.position.x < -15f)
         {
             hasPassedPlayer = true;
-            
-            // Give score for successfully avoiding the obstacle
-            if (ScoreManager.instance != null)
-            {
-                ScoreManager.instance.AddObstacleAvoidScore(obstacleType);
-            }
         }
     }
 

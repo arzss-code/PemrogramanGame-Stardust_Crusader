@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class ObjectSpawner : MonoBehaviour
 {
+
+    [Header("Spawner Reference (Opsional)")]
+    [SerializeField] private ObjectSpawner objectSpawner;
+
     [System.Serializable]
+
     public class Wave
     {
         public string waveName;
@@ -12,7 +17,7 @@ public class ObjectSpawner : MonoBehaviour
         public float spawnInterval = 1f;
         public int spawnCount = 5;
         public bool loopForever = false;
-        public float minDuration = 10f; // waktu minimum wave aktif
+        public float minDuration = 10f;
     }
 
     [Header("Wave Settings")]
@@ -20,74 +25,73 @@ public class ObjectSpawner : MonoBehaviour
     [SerializeField] private Transform spawn1;
     [SerializeField] private Transform spawn2;
 
-    // ➕ Tambahkan flag ini
     [HideInInspector] public bool finishedSpawning = false;
 
-    private void Start()
+    // Dipanggil oleh LevelIntroManager setelah cutscene selesai
+    public void BeginSpawning()
     {
         StartCoroutine(StartWaves());
     }
 
     private IEnumerator StartWaves()
     {
-        List<Coroutine> waveCoroutines = new List<Coroutine>();
-
         for (int i = 0; i < waves.Count; i++)
         {
             Wave wave = waves[i];
+            Debug.Log($"🚀 Memulai Wave {i}: {wave.waveName}");
 
-            // Delay antar wave (opsional)
-            if (i > 0) yield return new WaitForSeconds(2f);
+            if (i > 0) yield return new WaitForSeconds(2f); // Delay antar wave
 
-            Coroutine waveCoroutine = StartCoroutine(SpawnWave(wave));
-            waveCoroutines.Add(waveCoroutine);
+            if (wave.loopForever)
+            {
+                // Jalankan wave yang loop terus tanpa menghambat wave berikutnya
+                StartCoroutine(SpawnLoopingWave(wave));
+            }
+            else
+            {
+                yield return StartCoroutine(SpawnSingleWave(wave));
+            }
         }
 
-        // Tunggu semua wave selesai (yang tidak loopForever)
-        yield return new WaitUntil(() => AllNonLoopingWavesFinished());
-
-        // Tandai sudah selesai
         finishedSpawning = true;
-        Debug.Log("🎯 Semua wave ObstacleSpawner selesai!");
+        Debug.Log("🎯 Semua wave ObjectSpawner selesai!");
     }
 
-    private bool AllNonLoopingWavesFinished()
+    private IEnumerator SpawnSingleWave(Wave wave)
     {
-        foreach (Wave wave in waves)
-        {
-            if (!wave.loopForever)
-            {
-                // Kita bisa anggap selesai jika spawnCount sudah habis dan minDuration lewat
-                // Karena coroutine akan berhenti kalau syarat while terpenuhi
-                // Jadi jika coroutine-nya selesai, maka kita anggap selesai
-                // Kita tidak bisa cek langsung dari sini → jadi asumsi setelah coroutine selesai maka wave juga selesai
-                // return true saat ini sudah representatif
-                continue;
-            }
-        }
-        return true;
-    }
-
-    private IEnumerator SpawnWave(Wave wave)
-    {
-        Debug.Log("Memulai wave: " + wave.waveName);
-
         int spawned = 0;
-        float waveStartTime = Time.time;
+        float startTime = Time.time;
 
-        while (wave.loopForever || spawned < wave.spawnCount || Time.time - waveStartTime < wave.minDuration)
+        while (spawned < wave.spawnCount)
         {
-            if (wave.loopForever || spawned < wave.spawnCount)
-            {
-                Vector2 spawnPosition = RandomSpawnPoint();
-                Instantiate(wave.prefab, spawnPosition, Quaternion.identity);
-                spawned++;
-            }
-
+            Spawn(wave);
+            spawned++;
             yield return new WaitForSeconds(wave.spawnInterval);
         }
 
-        Debug.Log("Wave selesai: " + wave.waveName);
+        // Tunggu jika durasi wave belum cukup
+        float remainingTime = wave.minDuration - (Time.time - startTime);
+        if (remainingTime > 0f)
+        {
+            yield return new WaitForSeconds(remainingTime);
+        }
+
+        Debug.Log("✅ Wave selesai: " + wave.waveName);
+    }
+
+    private IEnumerator SpawnLoopingWave(Wave wave)
+    {
+        while (true)
+        {
+            Spawn(wave);
+            yield return new WaitForSeconds(wave.spawnInterval);
+        }
+    }
+
+    private void Spawn(Wave wave)
+    {
+        Vector2 pos = RandomSpawnPoint();
+        Instantiate(wave.prefab, pos, Quaternion.identity);
     }
 
     private Vector2 RandomSpawnPoint()
