@@ -97,6 +97,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Update()
     {
+        // DITAMBAHKAN: Jangan proses input jika game sedang di-pause
+        if (PauseManager.instance != null && PauseManager.instance.IsPaused)
+        {
+            rb.linearVelocity = Vector2.zero; // Hentikan gerakan player
+            return;
+        }
+
         if (isInCutscene)
         {
             rb.linearVelocity = Vector2.zero;

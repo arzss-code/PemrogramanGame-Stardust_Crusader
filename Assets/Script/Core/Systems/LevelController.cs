@@ -83,6 +83,12 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
+        // DITAMBAHKAN: Jangan proses wave jika game sedang di-pause
+        if (PauseManager.instance != null && PauseManager.instance.IsPaused)
+        {
+            return;
+        }
+
         if (!waveActive || waitingForNextWave || currentWaveIndex >= waves.Count) return;
 
         Wave currentWave = waves[currentWaveIndex];
