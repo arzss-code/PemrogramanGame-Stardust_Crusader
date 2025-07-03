@@ -11,7 +11,7 @@ public class Menus : MonoBehaviour
     public Button settingsButton;
     public Button backButton;
     public GameObject creditsPanel;
-    
+
     [Header("Score Display")]
     public TMP_Text highScoreDisplay;
 
@@ -22,14 +22,14 @@ public class Menus : MonoBehaviour
         {
             SetupControlDropdown();
         }
-        
+
         // Hide settings panel initially
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(false);
         }
-        
-        if (creditsPanel != null) 
+
+        if (creditsPanel != null)
         {
             creditsPanel.SetActive(false);
         }
@@ -37,7 +37,7 @@ public class Menus : MonoBehaviour
         // Display high score
         DisplayHighScore();
     }
-    
+
     private void DisplayHighScore()
     {
         if (highScoreDisplay != null && ScoreManager.instance != null)
@@ -46,38 +46,38 @@ public class Menus : MonoBehaviour
             highScoreDisplay.text = "High Score: " + highScore.ToString("N0");
         }
     }
-    
+
     private void SetupControlDropdown()
     {
         // Clear existing options
         controlSchemeDropdown.ClearOptions();
-        
+
         // Add control scheme options
         controlSchemeDropdown.AddOptions(new System.Collections.Generic.List<string>
         {
             "Keyboard",
             "Mouse"
         });
-        
+
         // Set current value based on saved settings
         if (SettingsManager.instance != null)
         {
             controlSchemeDropdown.value = (int)SettingsManager.instance.GetControlScheme();
         }
-        
+
         // Add listener for when value changes
         controlSchemeDropdown.onValueChanged.AddListener(OnControlSchemeChanged);
     }
-    
+
     // Panggil fungsi ini saat tombol Play ditekan
     public void PlayGame()
     {
-        // Reset score when starting new game
-        if (ScoreManager.instance != null)
+        // Reset state game (skor & level) saat memulai game baru
+        if (GameManager.instance != null)
         {
-            ScoreManager.instance.ResetScore();
+            GameManager.instance.ResetGameState();
         }
-        
+
         SceneManager.LoadScene("Level1"); // Ganti dengan nama scene utama kamu
     }
 
@@ -89,7 +89,7 @@ public class Menus : MonoBehaviour
             settingsPanel.SetActive(true);
         }
     }
-    
+
     // Panggil fungsi ini saat tombol Back ditekan di settings
     public void CloseSettings()
     {
@@ -98,7 +98,7 @@ public class Menus : MonoBehaviour
             settingsPanel.SetActive(false);
         }
     }
-    
+
     // Panggil fungsi ini saat control scheme dropdown berubah
     public void OnControlSchemeChanged(int value)
     {
@@ -108,7 +108,7 @@ public class Menus : MonoBehaviour
         }
     }
 
-    public void OpenCredits() 
+    public void OpenCredits()
     {
         if (creditsPanel != null)
         {
@@ -116,7 +116,7 @@ public class Menus : MonoBehaviour
         }
     }
 
-    public void CloseCredits() 
+    public void CloseCredits()
     {
         if (creditsPanel != null)
         {

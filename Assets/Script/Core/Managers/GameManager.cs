@@ -6,12 +6,15 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public float worldSpeed; // Variabel Anda yang sudah ada tetap dipertahankan
 
+    // DITAMBAHKAN: Untuk melacak level saat ini
+    public static int currentLevelIndex = 1;
+
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            
+
             // DITAMBAHKAN: Perintah ini membuat GameManager 'abadi' dan tidak ikut hancur
             // saat scene baru dimuat. Ini sangat PENTING!
             DontDestroyOnLoad(gameObject);
@@ -37,6 +40,9 @@ public class GameManager : MonoBehaviour
         {
             ScoreManager.instance.AddLevelCompleteScore();
         }
+
+        // DITAMBAHKAN: Naikkan level index sebelum memuat level baru
+        currentLevelIndex++;
 
         // Mendapatkan nomor index dari scene yang sedang berjalan saat ini.
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
@@ -64,15 +70,27 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         Debug.Log("GAME OVER");
-        
+
         // Stop scoring when game is over
         if (ScoreManager.instance != null)
         {
             ScoreManager.instance.StopScoring();
         }
-        
+
         // Ganti "GameOverScene" dengan nama scene "Game Over" yang sudah Anda buat.
         // Pastikan scene tersebut juga sudah didaftarkan di Build Settings.
         SceneManager.LoadScene("GameOverScene");
+    }
+
+    /// <summary>
+    /// Panggil fungsi ini untuk mereset state game (level dan skor) saat memulai game baru.
+    /// </summary>
+    public void ResetGameState()
+    {
+        currentLevelIndex = 1;
+        if (ScoreManager.instance != null)
+        {
+            ScoreManager.instance.ResetScore();
+        }
     }
 }

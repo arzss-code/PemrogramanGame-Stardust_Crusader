@@ -3220,6 +3220,7 @@ MonoBehaviour:
   controlSchemeDropdown: {fileID: 529791221}
   settingsButton: {fileID: 1612498211}
   backButton: {fileID: 1200885337}
+  creditsPanel: {fileID: 0}
   highScoreDisplay: {fileID: 5495429}
 --- !u!4 &2130940350
 Transform:
@@ -3618,24 +3619,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
-    - target: {fileID: 5643705076947893751, guid: 84cf737c364a1024d9f00c3d721dea97, type: 3}
-      propertyPath: bgmClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 4746c5a27e3ff1749b06b8c252b7147a, type: 3}
-    - target: {fileID: 5643705076947893751, guid: 84cf737c364a1024d9f00c3d721dea97, type: 3}
-      propertyPath: bgmSource
-      value: 
-      objectReference: {fileID: 3003124553240206695}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84cf737c364a1024d9f00c3d721dea97, type: 3}
---- !u!82 &3003124553240206695 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 1350786728033233426, guid: 84cf737c364a1024d9f00c3d721dea97, type: 3}
-  m_PrefabInstance: {fileID: 3003124553240206694}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4945991581606502519
 PrefabInstance:
   m_ObjectHideFlags: 0
