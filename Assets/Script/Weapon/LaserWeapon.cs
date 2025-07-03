@@ -34,7 +34,7 @@ public class LaserWeapon : MonoBehaviour
         if (PlayerController.instance.IsWeaponBoosted)
         {
             // --- LOGIKA TEMBAKAN BOOSTED (SPREAD SHOT 3 ARAH) ---
-            
+
             // Hitung arah untuk setiap tembakan
             Vector2 mainDirection = Vector2.right; // Arah lurus
             Vector2 upDirection = Quaternion.Euler(0, 0, 15) * Vector2.right;   // Arah diputar 15 derajat ke atas

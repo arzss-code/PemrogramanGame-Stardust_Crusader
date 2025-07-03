@@ -13,6 +13,9 @@ public class UIWarningController : MonoBehaviour
     [Header("Canvas Parent")]
     [SerializeField] private Transform uiCanvas; // drag Canvas UI kamu di Inspector
 
+    [Header("Spawner Reference")]
+    [SerializeField] private MonoBehaviour objectSpawner; // drag ObjectSpawner (bisa script apapun yg inherit MonoBehaviour)
+
     private GameObject currentInstance;
     private Coroutine flashCoroutine;
 
@@ -32,6 +35,13 @@ public class UIWarningController : MonoBehaviour
             return;
         }
 
+        // ✅ Nonaktifkan hanya ObjectSpawner
+        if (objectSpawner != null)
+        {
+            objectSpawner.enabled = false;
+            Debug.Log("🛑 ObjectSpawner dinonaktifkan karena Warning Boss aktif.");
+        }
+
         float usedDuration = (duration > 0) ? duration : defaultWarningDuration;
 
         // Hapus warning sebelumnya jika masih aktif
@@ -46,6 +56,12 @@ public class UIWarningController : MonoBehaviour
         cg.alpha = 0;
 
         flashCoroutine = StartCoroutine(FlashRoutine(currentInstance, cg, usedDuration));
+
+        // 🔊 Ganti BGM ke Boss BGM
+        if (AudioManager.instance != null)
+        {
+            StartCoroutine(SwitchToBossBGM());
+        }
     }
 
     public void HideWarning()
@@ -77,5 +93,22 @@ public class UIWarningController : MonoBehaviour
         }
 
         HideWarning();
+    }
+
+    private IEnumerator SwitchToBossBGM()
+    {
+        AudioManager audio = AudioManager.instance;
+
+        // Fade out BGM sekarang
+        audio.FadeOutBGM(1.5f);
+
+        // Tunggu sebelum ganti
+        yield return new WaitForSeconds(1.5f);
+
+        if (audio.bossBGM != null)
+        {
+            audio.ChangeBGM(audio.bossBGM);
+            audio.FadeInBGM(1.5f, 0.7f); // Volume boss, bisa kamu sesuaikan
+        }
     }
 }

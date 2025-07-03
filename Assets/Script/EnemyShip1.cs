@@ -67,9 +67,13 @@ public class EnemyShip1 : MonoBehaviour
             player = playerObj.transform;
         }
 
-        obstacleSpawner = FindObjectOfType<ObjectSpawner>();
-        StartCoroutine(WaitForObstacleThenEnter());
+        // HAPUS obstacleSpawner
+
+        // LANGSUNG masuk ke state masuk layar
+        currentState = State.EnteringScreen;
+        rb.linearVelocity = Vector2.left * entrySpeed;
     }
+
 
     private IEnumerator EnableColliderAfterDelay(float delay)
     {

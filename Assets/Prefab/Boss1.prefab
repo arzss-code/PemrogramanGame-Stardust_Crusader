@@ -163,6 +163,7 @@ MonoBehaviour:
   bossHealthSlider: {fileID: 0}
   bossHealthText: {fileID: 0}
   maxHealth: 50
+  mWhite: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
 --- !u!61 &3537665516368780349
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -193,7 +194,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0

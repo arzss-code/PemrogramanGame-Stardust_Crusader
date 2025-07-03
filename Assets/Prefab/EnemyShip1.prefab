@@ -166,6 +166,8 @@ MonoBehaviour:
   entrySpeed: 30
   colliderDelay: 2
   maxHealth: 3
+  scoreValue: 100
+  enemyType: Enemy Ship
   whiteMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
 --- !u!212 &1948581536289518782
 SpriteRenderer:
@@ -230,7 +232,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4816320124064259033}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -248,7 +250,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &2461131481287147269
 BoxCollider2D:
   m_ObjectHideFlags: 0
