@@ -8,6 +8,10 @@ public class AudioManager : MonoBehaviour
     public AudioSource sfxSource;
     public AudioSource bgmSource;
 
+    [Header("BGM Clips")]
+    [Tooltip("Musik yang akan diputar di Main Menu.")]
+    [SerializeField] private AudioClip mainMenuBGM;
+
     [Header("SFX")]
     [SerializeField] private AudioClip buttonClickSFX;
 
@@ -34,6 +38,16 @@ public class AudioManager : MonoBehaviour
         {
             bgmSource.volume = m_TargetBGMVolume;
             bgmSource.loop = true;
+        }
+    }
+
+    private void Start()
+    {
+        // Saat game pertama kali jalan, putar musik menu utama jika belum ada musik yang berputar.
+        if (mainMenuBGM != null && !bgmSource.isPlaying)
+        {
+            bgmSource.clip = mainMenuBGM;
+            bgmSource.Play();
         }
     }
 
@@ -121,5 +135,17 @@ public class AudioManager : MonoBehaviour
 
         bgmSource.volume = m_TargetBGMVolume;
         m_MusicFadeCoroutine = null;
+    }
+
+    /// <summary>
+    /// Memutar BGM untuk Main Menu. Panggil ini sebelum kembali ke Main Menu.
+    /// </summary>
+    public void PlayMainMenuBGM()
+    {
+        // Gunakan ChangeBGM untuk mendapatkan efek fade yang mulus
+        if (mainMenuBGM != null)
+        {
+            ChangeBGM(mainMenuBGM, 1.0f);
+        }
     }
 }

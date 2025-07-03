@@ -88,4 +88,19 @@ public class PauseManager : MonoBehaviour
             AudioManager.instance.bgmSource.UnPause();
         }
     }
+
+    /// <summary>
+    /// Mereset state pause manager ke kondisi awal.
+    /// Penting untuk dipanggil saat kembali ke menu atau memulai ulang game.
+    /// </summary>
+    public void ResetState()
+    {
+        isPaused = false;
+        Time.timeScale = 1f;
+        if (pauseMenuInstance != null)
+        {
+            Destroy(pauseMenuInstance);
+            pauseMenuInstance = null;
+        }
+    }
 }

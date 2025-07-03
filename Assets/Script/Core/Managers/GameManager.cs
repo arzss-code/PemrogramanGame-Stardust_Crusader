@@ -100,5 +100,11 @@ public class GameManager : MonoBehaviour
         {
             GameOverManager.instance.ResetState();
         }
+
+        // DITAMBAHKAN: Reset juga status Pause
+        if (PauseManager.instance != null)
+        {
+            PauseManager.instance.ResetState();
+        }
     }
 }

@@ -29,7 +29,7 @@ public class GameOverUI : MonoBehaviour
         // Tampilkan level yang dicapai
         if (levelReachedText != null && GameManager.instance != null)
         {
-            levelReachedText.text = "Level Reached: " + GameManager.currentLevelIndex;
+            levelReachedText.text = "Level: " + GameManager.currentLevelIndex;
         }
 
         if (ScoreManager.instance != null)
@@ -40,13 +40,13 @@ public class GameOverUI : MonoBehaviour
             // Menampilkan skor dari game yang baru saja berakhir
             if (finalScoreText != null)
             {
-                finalScoreText.text = "Your Score: " + finalScore.ToString("N0");
+                finalScoreText.text = "Score: " + finalScore.ToString("N0");
             }
 
             // Menampilkan skor tertinggi sepanjang masa
             if (highScoreText != null)
             {
-                highScoreText.text = "All-Time High Score: " + highScore.ToString("N0");
+                highScoreText.text = "High Score: " + highScore.ToString("N0");
             }
 
             // Cek apakah skor baru adalah rekor
@@ -85,8 +85,6 @@ public class GameOverUI : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f; // Kembalikan waktu sebelum pindah scene
-
         if (GameManager.instance != null)
         {
             GameManager.instance.ResetGameState();
@@ -97,14 +95,17 @@ public class GameOverUI : MonoBehaviour
 
     public void GoToMainMenu()
     {
-        Time.timeScale = 1f; // Kembalikan waktu sebelum pindah scene
-
         if (GameManager.instance != null)
         {
             GameManager.instance.ResetGameState();
         }
 
+        // Putar BGM menu utama
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlayMainMenuBGM();
+        }
+
         SceneManager.LoadScene(0);
     }
 }
-

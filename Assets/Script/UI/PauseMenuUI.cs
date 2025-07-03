@@ -59,8 +59,11 @@ public class PauseMenuUI : MonoBehaviour
 
     private void ExitToMainMenu()
     {
-        // PENTING: Kembalikan Time Scale ke 1 sebelum pindah scene
-        Time.timeScale = 1f;
+        // DITAMBAHKAN: Putar musik menu utama sebelum pindah scene
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlayMainMenuBGM();
+        }
 
         // Reset state game (level dan skor)
         if (GameManager.instance != null)

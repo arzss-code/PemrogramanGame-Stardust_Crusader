@@ -52,5 +52,13 @@ public class GameOverManager : MonoBehaviour
     public void ResetState()
     {
         isGameOver = false;
+        Time.timeScale = 1f; // Pastikan waktu kembali normal
+
+        // Hancurkan instance UI jika masih ada saat reset
+        if (gameOverMenuInstance != null)
+        {
+            Destroy(gameOverMenuInstance);
+            gameOverMenuInstance = null;
+        }
     }
 }

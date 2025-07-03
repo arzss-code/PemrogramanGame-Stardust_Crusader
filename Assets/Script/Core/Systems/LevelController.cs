@@ -51,6 +51,7 @@ public class LevelController : MonoBehaviour
     private bool waveActive = false;
     private bool waitingForNextWave = false;
     private List<GameObject> activeEnemies = new List<GameObject>();
+    private bool levelBegun = false; // DITAMBAHKAN: Flag untuk mencegah pemanggilan ganda
 
     private void Awake()
     {
@@ -62,10 +63,22 @@ public class LevelController : MonoBehaviour
             bossHealthSlider.gameObject.SetActive(false);
     }
 
+    private void Start()
+    {
+        // DITAMBAHKAN: Jika tidak ada LevelIntroManager di scene, level akan mulai secara otomatis.
+        // Ini membuat level bisa berjalan sendiri tanpa memerlukan cutscene intro.
+        if (FindObjectOfType<LevelIntroManager>() == null)
+        {
+            BeginLevel();
+        }
+    }
 
     public void BeginLevel()
     {
-        Debug.Log("🟢 BeginLevel dipanggil dari LevelIntroManager!");
+        if (levelBegun) return; // Mencegah pemanggilan ganda
+        levelBegun = true;
+
+        Debug.Log("🟢 BeginLevel dipanggil! Mengganti BGM ke musik level.");
         if (AudioManager.instance != null && levelBGM != null)
         {
             AudioManager.instance.ChangeBGM(levelBGM);

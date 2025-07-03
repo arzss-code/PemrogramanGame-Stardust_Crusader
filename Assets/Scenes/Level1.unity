@@ -1358,6 +1358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sfxSource: {fileID: 0}
   bgmSource: {fileID: 0}
+  mainMenuBGM: {fileID: 8300000, guid: 4746c5a27e3ff1749b06b8c252b7147a, type: 3}
   buttonClickSFX: {fileID: 0}
 --- !u!1 &802839319
 GameObject:
@@ -3276,7 +3277,7 @@ GameObject:
   - component: {fileID: 1905914228}
   - component: {fileID: 1905914227}
   m_Layer: 0
-  m_Name: LevelIntro
+  m_Name: LevelIntroManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3678,18 +3679,18 @@ SceneRoots:
   - {fileID: 1434793677833459349}
   - {fileID: 1887398618}
   - {fileID: 604722199}
-  - {fileID: 1989081034}
   - {fileID: 1559461390}
   - {fileID: 1160648982}
   - {fileID: 140716361820041231}
-  - {fileID: 311708529}
   - {fileID: 1633006601}
   - {fileID: 676291946}
   - {fileID: 354315390}
   - {fileID: 296548283}
-  - {fileID: 772449194}
-  - {fileID: 1905914228}
   - {fileID: 51819244}
   - {fileID: 188375957}
+  - {fileID: 1905914228}
+  - {fileID: 311708529}
+  - {fileID: 1989081034}
+  - {fileID: 772449194}
   - {fileID: 562662278}
   - {fileID: 1608685408}
