@@ -427,13 +427,18 @@ MonoBehaviour:
   crystalShardCount: 5
   crystalShardSpeed: 8
   crystalAttackCooldown: 6
+  burstProjectilePrefab: {fileID: 6539259549848973687, guid: 559c38811ff6b874eaf0c400a53f972c, type: 3}
+  burstFirePoint: {fileID: 8041201008522554554}
+  burstCount: 5
+  burstFireRate: 0.2
+  burstShootCooldown: 2
+  burstProjectileSpeed: 15
+  burstProjectileDamage: 1
+  burstShootSFX: {fileID: 8300000, guid: 5d0bb89cd6d5b304aa5dfc9e5e8ccbc0, type: 3}
   bossHealthSlider: {fileID: 0}
   bossHealthText: {fileID: 0}
   maxHealth: 75
-  scoreValue: 500
-  bossType: Crystal Stealth Ship
   mWhite: {fileID: 2100000, guid: 35a80721181006b41a9a1f03dd6ac05f, type: 2}
-  audioSource: {fileID: 0}
   stealthSound: {fileID: 0}
   crystalAttackSound: {fileID: 0}
   hitSound: {fileID: 8300000, guid: 21025ad36d5c61d44b22c3ee83a355f4, type: 3}

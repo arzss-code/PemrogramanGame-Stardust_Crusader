@@ -407,17 +407,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 100, y: 47.86}
   m_EdgeRadius: 0
---- !u!114 &750283229 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4643463739238848602, guid: 180aba3dc8b50b64b9262926718c64b0, type: 3}
-  m_PrefabInstance: {fileID: 1975519370}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63cceb6b9b7ec74f83b5d7a86981546, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &750283233 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8041201008522554554, guid: 180aba3dc8b50b64b9262926718c64b0, type: 3}
@@ -5370,7 +5359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73c90af5a657a5b42be40bf863b5227f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossToInitialize: {fileID: 750283229}
+  bossToInitialize: {fileID: 0}
   battleArea: {fileID: 656482583}
   healthSlider: {fileID: 0}
   healthText: {fileID: 0}
@@ -5950,7 +5939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5089d5ecf8c974408039f76d65bcdbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentScheme: 0
+  currentScheme: 1
   moveSpeed: 15
   boostSpeed: 50
   stoppingDistance: 0.1
