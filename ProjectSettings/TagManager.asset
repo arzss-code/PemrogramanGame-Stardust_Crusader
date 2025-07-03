@@ -11,6 +11,7 @@ TagManager:
   - Boss
   - enemy
   - enemyBullet
+  - EnemyShield
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - Obstacle
   - bullet
   - Boss
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -62,6 +63,9 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 852552299
+    locked: 0
+  - name: Enemy
+    uniqueID: 840773141
     locked: 0
   m_RenderingLayers:
   - Default
