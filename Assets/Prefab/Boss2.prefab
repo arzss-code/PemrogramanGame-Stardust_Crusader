@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 684632150966164309}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.46666718, y: -4.8, z: 387.7795}
+  m_LocalPosition: {x: -7.19, y: -4.8, z: 387.7795}
   m_LocalScale: {x: 0.6666667, y: 0.6666667, z: 0.6666667}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -62,37 +62,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8041201008522554554}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2358300762091884997
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2707098107586120103}
-  m_Layer: 0
-  m_Name: BossSpawnPoint (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2707098107586120103
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2358300762091884997}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.46666718, y: -11.693333, z: 387.7795}
-  m_LocalScale: {x: 0.6666667, y: 0.6666667, z: 0.6666667}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8041201008522554554}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3836278901639948884
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,7 +87,7 @@ Transform:
   m_GameObject: {fileID: 3836278901639948884}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.46666718, y: 6.1066675, z: 387.7795}
+  m_LocalPosition: {x: -6.41, y: 2.87, z: 387.7795}
   m_LocalScale: {x: 0.6666667, y: 0.6666667, z: 0.6666667}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -149,7 +118,7 @@ Transform:
   m_GameObject: {fileID: 4454153323197018349}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.46666718, y: -1.0400001, z: 387.7795}
+  m_LocalPosition: {x: -8.05, y: -1.0400001, z: 387.7795}
   m_LocalScale: {x: 0.6666667, y: 0.6666667, z: 0.6666667}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -194,7 +163,6 @@ Transform:
   - {fileID: 7649919539207578060}
   - {fileID: 4999028239924724499}
   - {fileID: 2511661250031742282}
-  - {fileID: 2707098107586120103}
   - {fileID: 9181443358174033133}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -360,16 +328,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a5e1aa0fac6d44a8f6accef81b16f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stealthEffectPrefab: {fileID: 100000, guid: 1a6345b23d834ab4290d4498136e1abc, type: 3}
-  appearEffectPrefab: {fileID: 7305185502956871417, guid: 85b062a5517cf8345bb6784ffbed4877, type: 3}
-  crystalShardPrefab: {fileID: 888444077320411739, guid: 0c2509361b13505428ce788b7f846686, type: 3}
+  stealthEffectPrefab: {fileID: 1590415177872986601, guid: acdb90624a404aa438447006f1026065, type: 3}
+  appearEffectPrefab: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
+  crystalShardPrefab: {fileID: 5112403345868107898, guid: 0f2edc6223ecc864e819b953a0762f6a, type: 3}
   stealthEffectPoint: {fileID: 9181443358174033133}
   crystalShardSpawnPoints:
   - {fileID: 7649919539207578060}
   - {fileID: 4999028239924724499}
   - {fileID: 2511661250031742282}
   battleArea: {fileID: 0}
-  moveSpeed: 2
+  moveSpeed: 5
   stealthMoveSpeed: 4
   stealthDuration: 3
   stealthCooldown: 8
@@ -383,11 +351,11 @@ MonoBehaviour:
   maxHealth: 75
   scoreValue: 500
   bossType: Crystal Stealth Ship
-  mWhite: {fileID: 0}
+  mWhite: {fileID: 2100000, guid: 35a80721181006b41a9a1f03dd6ac05f, type: 2}
   audioSource: {fileID: 0}
   stealthSound: {fileID: 0}
   crystalAttackSound: {fileID: 0}
-  hitSound: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: 21025ad36d5c61d44b22c3ee83a355f4, type: 3}
 --- !u!1001 &5273856260783475528
 PrefabInstance:
   m_ObjectHideFlags: 0

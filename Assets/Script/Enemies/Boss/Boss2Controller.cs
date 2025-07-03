@@ -106,6 +106,24 @@ public class Boss2Controller : MonoBehaviour
         SetRandomTargetPosition();
     }
 
+    public void Initialize(BoxCollider2D area, Slider healthSlider, TextMeshProUGUI healthText)
+    {
+        battleArea = area;
+        bossHealthSlider = healthSlider;
+        bossHealthText = healthText;
+        
+        if (battleArea != null)
+        {
+            Bounds bounds = battleArea.bounds;
+            minBounds = bounds.min;
+            maxBounds = bounds.max;
+        }
+        
+        InitHealthUI();
+        
+        Debug.Log("✅ Boss2Controller initialized with external UI components");
+    }
+
     private void Update()
     {
         if (player == null) 
@@ -375,20 +393,51 @@ public class Boss2Controller : MonoBehaviour
             shootPosition = randomSpawnPoint.position;
         }
 
-        // Calculate direction to player
+        // Calculate direction to player with debug info
         Vector2 directionToPlayer = (player.position - shootPosition).normalized;
+        Vector2 velocity = directionToPlayer * crystalShardSpeed;
+        
+        Debug.Log($"🔫 Boss Position: {transform.position}");
+        Debug.Log($"🎯 Player Position: {player.position}");
+        Debug.Log($"📍 Shoot Position: {shootPosition}");
+        Debug.Log($"➡️ Direction: {directionToPlayer}");
+        Debug.Log($"⚡ Velocity: {velocity} (Speed: {crystalShardSpeed})");
         
         if (crystalShardPrefab != null)
         {
             // Shoot crystal shard prefab
-            Debug.Log($"🔫 Menembak Crystal Shard dari {shootPosition} ke arah Player");
             GameObject crystalShard = Instantiate(crystalShardPrefab, shootPosition, Quaternion.identity);
             
-            // Set velocity towards player
-            Rigidbody2D shardRb = crystalShard.GetComponent<Rigidbody2D>();
-            if (shardRb != null)
+            // Try to use SimpleCrystalShard.SetVelocity method first
+            SimpleCrystalShard shardScript = crystalShard.GetComponent<SimpleCrystalShard>();
+            if (shardScript != null)
             {
-                shardRb.linearVelocity = directionToPlayer * crystalShardSpeed;
+                shardScript.SetVelocity(directionToPlayer, crystalShardSpeed);
+                Debug.Log($"✅ Using SimpleCrystalShard.SetVelocity method");
+            }
+            else
+            {
+                // Fallback to direct Rigidbody2D control
+                Rigidbody2D shardRb = crystalShard.GetComponent<Rigidbody2D>();
+                if (shardRb != null)
+                {
+                    shardRb.linearVelocity = velocity;
+                    Debug.Log($"✅ Crystal Shard Rigidbody2D found, velocity set to: {velocity}");
+                }
+                else
+                {
+                    Debug.LogError("❌ Crystal Shard TIDAK memiliki Rigidbody2D! Menambahkan secara otomatis...");
+                    shardRb = crystalShard.AddComponent<Rigidbody2D>();
+                    shardRb.gravityScale = 0;
+                    shardRb.linearVelocity = velocity;
+                }
+            }
+            
+            // Ensure collider is trigger
+            Collider2D shardCol = crystalShard.GetComponent<Collider2D>();
+            if (shardCol != null)
+            {
+                shardCol.isTrigger = true;
             }
             
             // Auto-destroy after 8 seconds
@@ -410,10 +459,15 @@ public class Boss2Controller : MonoBehaviour
         tempCrystal.transform.position = shootPosition;
         tempCrystal.transform.localScale = Vector3.one * 0.4f;
         
-        // Setup physics
+        // Setup physics - PENTING: gravity scale = 0!
         Rigidbody2D rb = tempCrystal.AddComponent<Rigidbody2D>();
-        rb.gravityScale = 0;
-        rb.linearVelocity = direction * crystalShardSpeed;
+        rb.gravityScale = 0; // No gravity!
+        rb.linearDamping = 0; // No air resistance
+        rb.angularDamping = 0;
+        
+        // Calculate velocity
+        Vector2 velocity = direction * crystalShardSpeed;
+        rb.linearVelocity = velocity;
         
         // Setup collision
         Collider2D col = tempCrystal.GetComponent<Collider2D>();
@@ -429,7 +483,10 @@ public class Boss2Controller : MonoBehaviour
             renderer.material.color = Color.cyan;
         }
         
-        Debug.Log($"🔫 Temporary Crystal Bullet ditembakkan dengan kecepatan: {direction * crystalShardSpeed}");
+        Debug.Log($"🔫 Temporary Crystal Bullet created at {shootPosition}");
+        Debug.Log($"📈 Direction: {direction}, Speed: {crystalShardSpeed}");
+        Debug.Log($"⚡ Final Velocity: {velocity}");
+        Debug.Log($"🚀 Rigidbody settings - Gravity: {rb.gravityScale}, Drag: {rb.linearDamping}");
         
         // Auto-destroy
         Destroy(tempCrystal, 8f);
