@@ -77,9 +77,11 @@ public class GameManager : MonoBehaviour
             ScoreManager.instance.StopScoring();
         }
 
-        // Ganti "GameOverScene" dengan nama scene "Game Over" yang sudah Anda buat.
-        // Pastikan scene tersebut juga sudah didaftarkan di Build Settings.
-        SceneManager.LoadScene("GameOverScene");
+        // Panggil GameOverManager untuk menampilkan UI prefab, bukan memuat scene baru
+        if (GameOverManager.instance != null)
+        {
+            GameOverManager.instance.ShowGameOver();
+        }
     }
 
     /// <summary>
@@ -91,6 +93,12 @@ public class GameManager : MonoBehaviour
         if (ScoreManager.instance != null)
         {
             ScoreManager.instance.ResetScore();
+        }
+
+        // DITAMBAHKAN: Reset juga status Game Over
+        if (GameOverManager.instance != null)
+        {
+            GameOverManager.instance.ResetState();
         }
     }
 }

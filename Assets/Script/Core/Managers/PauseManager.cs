@@ -30,7 +30,9 @@ public class PauseManager : MonoBehaviour
     private void Update()
     {
         // Dengarkan input tombol Escape untuk membuka/menutup menu pause
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // DITAMBAHKAN: Cek juga apakah game sudah berakhir
+        if (Input.GetKeyDown(KeyCode.Escape) &&
+            (GameOverManager.instance == null || !GameOverManager.instance.IsGameOver))
         {
             TogglePause();
         }

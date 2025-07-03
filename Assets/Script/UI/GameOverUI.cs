@@ -6,18 +6,17 @@ using TMPro;
 public class GameOverUI : MonoBehaviour
 {
     [Header("Score Display")]
-    public TMP_Text finalScoreText;
-    public TMP_Text highScoreText;
-    public TMP_Text newHighScoreText;
-    public TMP_Text levelReachedText; // DITAMBAHKAN
+    [SerializeField] private TMP_Text finalScoreText;
+    [SerializeField] private TMP_Text highScoreText;
+    [SerializeField] private TMP_Text newHighScoreText;
+    [SerializeField] private TMP_Text levelReachedText;
 
     [Header("Buttons")]
-    public Button restartButton;
-    public Button mainMenuButton;
-    public Button quitButton;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button mainMenuButton;
 
     [Header("Effects")]
-    public Animator uiAnimator;
+    [SerializeField] private Animator uiAnimator;
 
     private void Start()
     {
@@ -27,10 +26,10 @@ public class GameOverUI : MonoBehaviour
 
     private void DisplayFinalScore()
     {
-        // DITAMBAHKAN: Tampilkan level yang dicapai
+        // Tampilkan level yang dicapai
         if (levelReachedText != null && GameManager.instance != null)
         {
-            levelReachedText.text = "Level: " + GameManager.currentLevelIndex;
+            levelReachedText.text = "Level Reached: " + GameManager.currentLevelIndex;
         }
 
         if (ScoreManager.instance != null)
@@ -41,16 +40,16 @@ public class GameOverUI : MonoBehaviour
             // Menampilkan skor dari game yang baru saja berakhir
             if (finalScoreText != null)
             {
-                finalScoreText.text = "Score: " + finalScore.ToString("N0");
+                finalScoreText.text = "Your Score: " + finalScore.ToString("N0");
             }
 
             // Menampilkan skor tertinggi sepanjang masa
             if (highScoreText != null)
             {
-                highScoreText.text = "High Score: " + highScore.ToString("N0");
+                highScoreText.text = "All-Time High Score: " + highScore.ToString("N0");
             }
 
-            // Check if new high score
+            // Cek apakah skor baru adalah rekor
             if (newHighScoreText != null)
             {
                 if (finalScore >= highScore && finalScore > 0)
@@ -58,7 +57,6 @@ public class GameOverUI : MonoBehaviour
                     newHighScoreText.gameObject.SetActive(true);
                     newHighScoreText.text = "NEW HIGH SCORE!";
 
-                    // Trigger special animation if available
                     if (uiAnimator != null)
                     {
                         uiAnimator.SetTrigger("NewHighScore");
@@ -83,44 +81,30 @@ public class GameOverUI : MonoBehaviour
         {
             mainMenuButton.onClick.AddListener(GoToMainMenu);
         }
-
-        if (quitButton != null)
-        {
-            quitButton.onClick.AddListener(QuitGame);
-        }
     }
 
     public void RestartGame()
     {
-        // Reset game state (skor & level)
+        Time.timeScale = 1f; // Kembalikan waktu sebelum pindah scene
+
         if (GameManager.instance != null)
         {
             GameManager.instance.ResetGameState();
         }
 
-        // Load the first level (adjust scene name as needed)
         SceneManager.LoadScene("Level1");
     }
 
     public void GoToMainMenu()
     {
-        // Reset game state
+        Time.timeScale = 1f; // Kembalikan waktu sebelum pindah scene
+
         if (GameManager.instance != null)
         {
             GameManager.instance.ResetGameState();
         }
 
-        // Load main menu (adjust scene name/index as needed)
         SceneManager.LoadScene(0);
     }
-
-    public void QuitGame()
-    {
-        Debug.Log("Quitting game...");
-        Application.Quit();
-
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
-    }
 }
+
