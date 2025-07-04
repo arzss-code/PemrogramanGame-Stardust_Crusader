@@ -23,18 +23,6 @@ public class LevelController : MonoBehaviour
     [SerializeField] private Transform spawn1;
     [SerializeField] private Transform spawn2;
 
-    [Header("Wave Popup Settings")]
-    [SerializeField] private GameObject wavePopupPrefab;
-    [SerializeField] private Canvas wavePopupCanvas;
-    [SerializeField] private float popupDisplayDuration = 2f;
-    [SerializeField] private int currentLevel = 1;
-    [SerializeField] private string[] waveMessages = {
-        "INCOMING HOSTILES",
-        "ENEMY REINFORCEMENTS", 
-        "HEAVY ASSAULT",
-        "PREPARE FOR BATTLE"
-    };
-
     [Header("Timing Settings")]
     [SerializeField] private float delayBeforeEnemyWave = 3f;
     [Tooltip("Jeda waktu (detik) setelah wave terakhir selesai sebelum bos muncul.")]
@@ -64,8 +52,10 @@ public class LevelController : MonoBehaviour
     [SerializeField] private AudioClip bossBGM;
 
     [Header("Level Flow")]
-    [Tooltip("Nama scene yang akan dimuat setelah bos dikalahkan. Pastikan nama ini ada di Build Settings.")]
-    [SerializeField] private string nextLevelSceneName;
+    [Tooltip("Apakah ini level terakhir? Jika ya, akan menampilkan Win Panel, bukan pindah scene.")]
+    [SerializeField] private bool isFinalLevel = false;
+    [Tooltip("Prefab Win Panel yang akan muncul jika ini adalah level terakhir.")]
+    [SerializeField] private GameObject winPanelPrefab;
     [SerializeField] private float delayBeforeNextLevel = 3f;
 
     private bool bossSpawned = false;
@@ -108,10 +98,7 @@ public class LevelController : MonoBehaviour
         if (levelBegun) return; // Mencegah pemanggilan ganda
         levelBegun = true;
 
-        // Auto-sync current level from GameManager if available
-        currentLevel = GameManager.currentLevelIndex;
-
-        Debug.Log($"🟢 BeginLevel dipanggil! Level {currentLevel} dimulai. Mengganti BGM ke musik level.");
+        Debug.Log("🟢 BeginLevel dipanggil! Mengganti BGM ke musik level.");
         if (AudioManager.instance != null && levelBGM != null)
         {
             AudioManager.instance.ChangeBGM(levelBGM);
@@ -155,9 +142,6 @@ public class LevelController : MonoBehaviour
     private IEnumerator StartWave(int waveIndex)
     {
         if (waveIndex >= waves.Count) yield break;
-
-        // Show wave popup message
-        yield return StartCoroutine(ShowWavePopup(waveIndex));
 
         Wave wave = waves[waveIndex];
         Debug.Log($"⏳ Initial delay {wave.initialDelay} detik untuk wave {waveIndex}");
@@ -216,10 +200,17 @@ public class LevelController : MonoBehaviour
                     boss2.Initialize(bossBattleArea, bossHealthSlider, bossHealthText);
                 }
 
-                // Jika tidak ada skrip bos yang cocok, beri peringatan.
-                if (boss1 == null && boss2 == null)
+                // Coba inisialisasi sebagai Boss3Controller
+                var boss3 = boss.GetComponent<Boss3Controller>();
+                if (boss3 != null)
                 {
-                    Debug.LogWarning($"Prefab bos '{bossPrefab.name}' tidak memiliki skrip Boss1Controller atau Boss2Controller yang bisa diinisialisasi.", boss);
+                    boss3.Initialize(bossBattleArea, bossHealthSlider, bossHealthText, bossShieldSlider, bossShieldText);
+                }
+
+                // Jika tidak ada skrip bos yang cocok, beri peringatan.
+                if (boss1 == null && boss2 == null && boss3 == null)
+                {
+                    Debug.LogWarning($"Prefab bos '{bossPrefab.name}' tidak memiliki skrip Boss1Controller, Boss2Controller, atau Boss3Controller yang bisa diinisialisasi.", boss);
                 }
 
                 bossSpawned = true;
@@ -245,16 +236,46 @@ public class LevelController : MonoBehaviour
     private IEnumerator CompleteLevelAfterDelay()
     {
         yield return new WaitForSeconds(delayBeforeNextLevel);
-        if (GameManager.instance != null)
+
+        if (isFinalLevel)
         {
-            GameManager.instance.LevelCompleted();
+            // Ini adalah level terakhir, berikan skor bonus dan tampilkan Win Panel
+            Debug.Log("🏆 GAME TAMAT! Menampilkan Win Panel.");
+
+            // Berikan skor bonus penyelesaian level
+            if (ScoreManager.instance != null)
+            {
+                ScoreManager.instance.AddLevelCompleteScore();
+            }
+
+            if (winPanelPrefab != null)
+            {
+                Instantiate(winPanelPrefab);
+                // Jeda game dan musik
+                Time.timeScale = 0f;
+                if (AudioManager.instance != null && AudioManager.instance.bgmSource.isPlaying)
+                {
+                    AudioManager.instance.bgmSource.Pause();
+                }
+            }
+            else
+            {
+                Debug.LogError("isFinalLevel is true, tapi winPanelPrefab belum di-assign di LevelController!", this);
+            }
         }
         else
         {
-            Debug.LogError("GameManager.instance tidak ditemukan! Tidak bisa melanjutkan ke level berikutnya.");
+            // Ini bukan level terakhir, lanjutkan ke level berikutnya via GameManager
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.LevelCompleted();
+            }
+            else
+            {
+                Debug.LogError("GameManager.instance tidak ditemukan! Tidak bisa melanjutkan ke level berikutnya.");
+            }
         }
     }
-
     private void Spawn(Wave wave)
     {
         if (wave.prefab == null)
@@ -284,183 +305,6 @@ public class LevelController : MonoBehaviour
             activeEnemies.Remove(enemy);
             Debug.Log("☠️ Musuh dihapus dari activeEnemies");
         }
-    }
-
-    private IEnumerator ShowWavePopup(int waveIndex)
-    {
-        string message = GetWaveMessage(waveIndex);
-        Debug.Log($"📢 Showing wave popup: {message}");
-
-        if (wavePopupPrefab != null)
-        {
-            // Create popup from prefab
-            yield return StartCoroutine(ShowPopupFromPrefab(message));
-        }
-        else
-        {
-            // Fallback: Create simple popup
-            yield return StartCoroutine(ShowSimplePopup(message));
-        }
-    }
-
-    private string GetWaveMessage(int waveIndex)
-    {
-        string levelText = $"LEVEL {currentLevel}";
-        string waveText = $"WAVE {waveIndex + 1}";
-        string description = "";
-        
-        if (waveMessages != null && waveIndex < waveMessages.Length)
-        {
-            description = waveMessages[waveIndex];
-        }
-        else
-        {
-            description = "ENEMY APPROACHING";
-        }
-        
-        return $"{levelText}\n{waveText} {description}";
-    }
-
-    private IEnumerator ShowPopupFromPrefab(string message)
-    {
-        Canvas canvas = wavePopupCanvas != null ? wavePopupCanvas : FindObjectOfType<Canvas>();
-        if (canvas == null)
-        {
-            Debug.LogWarning("No Canvas found for wave popup!");
-            yield break;
-        }
-
-        GameObject popup = Instantiate(wavePopupPrefab, canvas.transform);
-        
-        // Try to find Text component and set message
-        TMPro.TextMeshProUGUI textComponent = popup.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-        if (textComponent != null)
-        {
-            textComponent.text = message;
-        }
-        else
-        {
-            UnityEngine.UI.Text legacyText = popup.GetComponentInChildren<UnityEngine.UI.Text>();
-            if (legacyText != null)
-            {
-                legacyText.text = message;
-            }
-        }
-
-        // Play popup animation if Animator exists
-        Animator animator = popup.GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.SetTrigger("Show");
-        }
-
-        yield return new WaitForSeconds(popupDisplayDuration);
-
-        // Hide popup with animation if possible
-        if (animator != null)
-        {
-            animator.SetTrigger("Hide");
-            yield return new WaitForSeconds(0.5f); // Wait for hide animation
-        }
-
-        Destroy(popup);
-    }
-
-    private IEnumerator ShowSimplePopup(string message)
-    {
-        // Create simple popup UI
-        Canvas canvas = FindObjectOfType<Canvas>();
-        if (canvas == null)
-        {
-            Debug.LogWarning("No Canvas found for simple popup!");
-            yield break;
-        }
-
-        // Create popup container
-        GameObject popup = new GameObject("WavePopup");
-        popup.transform.SetParent(canvas.transform, false);
-
-        // Add background panel
-        UnityEngine.UI.Image background = popup.AddComponent<UnityEngine.UI.Image>();
-        background.color = new Color(0, 0, 0, 0.7f);
-        
-        RectTransform bgRect = popup.GetComponent<RectTransform>();
-        bgRect.anchorMin = new Vector2(0.2f, 0.4f);
-        bgRect.anchorMax = new Vector2(0.8f, 0.6f);
-        bgRect.offsetMin = Vector2.zero;
-        bgRect.offsetMax = Vector2.zero;
-
-        // Create text
-        GameObject textObj = new GameObject("Text");
-        textObj.transform.SetParent(popup.transform, false);
-        
-        TMPro.TextMeshProUGUI text = textObj.AddComponent<TMPro.TextMeshProUGUI>();
-        text.text = message;
-        text.fontSize = 36;
-        text.color = Color.white;
-        text.alignment = TMPro.TextAlignmentOptions.Center;
-        text.fontStyle = TMPro.FontStyles.Bold;
-
-        RectTransform textRect = textObj.GetComponent<RectTransform>();
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = new Vector2(20, 10);
-        textRect.offsetMax = new Vector2(-20, -10);
-
-        // Simple fade-in animation
-        float fadeTime = 0.3f;
-        Color bgColor = background.color;
-        Color textColor = text.color;
-        
-        bgColor.a = 0;
-        textColor.a = 0;
-        background.color = bgColor;
-        text.color = textColor;
-
-        // Fade in
-        float timer = 0;
-        while (timer < fadeTime)
-        {
-            timer += Time.deltaTime;
-            float alpha = timer / fadeTime;
-            
-            bgColor.a = alpha * 0.7f;
-            textColor.a = alpha;
-            background.color = bgColor;
-            text.color = textColor;
-            
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(popupDisplayDuration - fadeTime * 2);
-
-        // Fade out
-        timer = 0;
-        while (timer < fadeTime)
-        {
-            timer += Time.deltaTime;
-            float alpha = 1 - (timer / fadeTime);
-            
-            bgColor.a = alpha * 0.7f;
-            textColor.a = alpha;
-            background.color = bgColor;
-            text.color = textColor;
-            
-            yield return null;
-        }
-
-        Destroy(popup);
-    }
-
-    public void SetCurrentLevel(int level)
-    {
-        currentLevel = level;
-        Debug.Log($"📊 Current level set to: {currentLevel}");
-    }
-
-    public int GetCurrentLevel()
-    {
-        return currentLevel;
     }
 
     private class DespawnTracker : MonoBehaviour

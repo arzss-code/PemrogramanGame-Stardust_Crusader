@@ -6377,18 +6377,9 @@ MonoBehaviour:
     initialDelay: 5
   spawn1: {fileID: 712115292}
   spawn2: {fileID: 575774873}
-  wavePopupPrefab: {fileID: 0}
-  wavePopupCanvas: {fileID: 0}
-  popupDisplayDuration: 2
-  currentLevel: 1
-  waveMessages:
-  - INCOMING HOSTILES
-  - ENEMY REINFORCEMENTS
-  - HEAVY ASSAULT
-  - PREPARE FOR BATTLE
   delayBeforeEnemyWave: 20
   delayBeforeBoss: 10
-  bossPrefab: {fileID: 7855420043618906113, guid: 6353672a92da74a459cfada5a50cca01, type: 3}
+  bossPrefab: {fileID: 2398078478851217955, guid: fa7997c9b940d134ea82f8d4080476a4, type: 3}
   bossSpawnPoint: {fileID: 508109647}
   bossBattleArea: {fileID: 306835787}
   bossHealthSlider: {fileID: 1509074972}
@@ -6396,8 +6387,9 @@ MonoBehaviour:
   bossShieldSlider: {fileID: 1223192571}
   bossShieldText: {fileID: 793712424}
   levelBGM: {fileID: 8300000, guid: 99cf50172062f0b4e8630b0af93867cc, type: 3}
-  bossBGM: {fileID: 0}
-  nextLevelSceneName: 
+  bossBGM: {fileID: 8300000, guid: 917c00a7054ba1a47a11740f06ce204e, type: 3}
+  isFinalLevel: 1
+  winPanelPrefab: {fileID: 7653670402040600353, guid: 15241bbea6fd09a40a3bc5c8ad8a8213, type: 3}
   delayBeforeNextLevel: 3
 --- !u!4 &641241135
 Transform:
