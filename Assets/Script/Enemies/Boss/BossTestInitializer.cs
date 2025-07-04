@@ -10,7 +10,7 @@ public class BossTestInitializer : MonoBehaviour
 {
     [Header("Referensi Wajib")]
     [Tooltip("Seret prefab atau objek Boss1 dari scene ke sini.")]
-    [SerializeField] private Boss1Controller bossToInitialize;
+    [SerializeField] private Boss2Controller bossToInitialize;
 
     [Tooltip("Seret objek yang memiliki BoxCollider2D sebagai area pergerakan bos.")]
     [SerializeField] private BoxCollider2D battleArea;

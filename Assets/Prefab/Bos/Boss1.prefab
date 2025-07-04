@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 6539259549848973687, guid: 559c38811ff6b874eaf0c400a53f972c, type: 3}
-  firePoint: {fileID: 0}
+  firePoint: {fileID: 8041201008522554554}
   speed: 50
   damage: 1
 --- !u!1 &8137922545467455086
