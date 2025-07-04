@@ -48,6 +48,16 @@ public class EnemyShip3 : MonoBehaviour
             originalMaterial = spriteRenderer.material;
         }
 
+        // Cari BattleArea otomatis
+        if (battleArea == null)
+        {
+            GameObject areaObj = GameObject.FindWithTag("EnemyBattleArea");
+            if (areaObj != null)
+            {
+                battleArea = areaObj.GetComponent<BoxCollider2D>();
+            }
+        }
+
         if (battleArea != null)
         {
             Bounds bounds = battleArea.bounds;
@@ -60,7 +70,7 @@ public class EnemyShip3 : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠️ Battle Area belum di-assign pada EnemyShip3!");
+            Debug.LogWarning("⚠️ Battle Area tidak ditemukan! Harap beri Tag 'EnemyBattleArea' pada BoxCollider2D");
             minY = -5f;
             maxY = 5f;
             minX = -15f;
@@ -68,6 +78,7 @@ public class EnemyShip3 : MonoBehaviour
             entryTargetX = 12f;
         }
     }
+
 
     private void Update()
     {
