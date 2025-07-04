@@ -62,6 +62,13 @@ public class Boss3Controller : MonoBehaviour, IDamageable
             defaultMaterial = spriteRenderer.material;
         }
 
+        // Otomatis cari komponen penting untuk mengurangi risiko error jika lupa di-assign di Inspector.
+        if (regenShield == null)
+        {
+            regenShield = GetComponentInChildren<BossRegenShield>();
+            Debug.Log("Mencari BossRegenShield secara otomatis...");
+        }
+
         if (battleArea != null)
         {
             entryTargetX = battleArea.bounds.max.x - 1f; // masuk sedikit ke dalam BattleArea
@@ -94,6 +101,10 @@ public class Boss3Controller : MonoBehaviour, IDamageable
         {
             regenShield.bossShieldSlider = this.bossShieldSlider;
             regenShield.bossShieldText = this.bossShieldText;
+        }
+        else
+        {
+            Debug.LogWarning("Referensi 'regenShield' pada Boss3Controller hilang! UI Shield tidak akan ter-update dengan benar.", this);
         }
 
         InitUI();
@@ -174,7 +185,7 @@ public class Boss3Controller : MonoBehaviour, IDamageable
     public void TakeDamage(int damageAmount)
     {
         if (isDying) return;
- 
+
         // Logika shield sekarang ditangani oleh LaserBullets.cs.
         // Metode ini hanya akan dipanggil dengan sisa damage jika shield sudah ditembus,
         // atau damage penuh jika shield tidak aktif.
