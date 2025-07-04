@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(AudioSource))]
 public class Boss2Controller : MonoBehaviour, IDamageable
 {
     [Header("Visual Effects")]
