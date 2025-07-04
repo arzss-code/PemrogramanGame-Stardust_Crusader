@@ -32,10 +32,20 @@ public class LevelController : MonoBehaviour
     [SerializeField] private GameObject bossPrefab;
     [SerializeField] private Transform bossSpawnPoint;
     [SerializeField] private BoxCollider2D bossBattleArea;
+
+    [Header("UI Elements")]
+    [Tooltip("Teks untuk menampilkan informasi wave (misal: 'Wave 1 / 3'). Opsional, bisa dikosongkan.")]
+    [SerializeField] private TextMeshProUGUI waveInfoText;
+    [Tooltip("Durasi (detik) wave popup ditampilkan sebelum menghilang.")]
+    [SerializeField] private float wavePopupDuration = 3.0f;
+
+    [Header("UI Messages")]
+    [Tooltip("Nomor level saat ini untuk ditampilkan di popup.")]
+    [SerializeField] private int currentLevel = 1;
+    [Tooltip("Pesan deskriptif untuk setiap wave. Jika kosong, akan menggunakan pesan default.")]
+    [SerializeField] private string[] waveMessages;
     [SerializeField] private Slider bossHealthSlider;
     [SerializeField] private TextMeshProUGUI bossHealthText;
-
-    // 🔽 Tambahan baru untuk Shield
     [SerializeField] private Slider bossShieldSlider;
     [SerializeField] private TextMeshProUGUI bossShieldText;
 
@@ -81,6 +91,15 @@ public class LevelController : MonoBehaviour
 
         if (bossShieldText != null)
             bossShieldText.gameObject.SetActive(false);
+
+        if (waveInfoText != null)
+            waveInfoText.gameObject.SetActive(false);
+        else
+        {
+            // Jika referensi UI tidak ada, coba buat secara otomatis.
+            Debug.Log("Wave Info Text tidak di-assign. Mencoba membuat secara otomatis...");
+            CreateWaveInfoText();
+        }
     }
 
     private void Start()
@@ -147,6 +166,8 @@ public class LevelController : MonoBehaviour
         Debug.Log($"⏳ Initial delay {wave.initialDelay} detik untuk wave {waveIndex}");
         yield return new WaitForSeconds(wave.initialDelay);
 
+        if (waveInfoText != null) StartCoroutine(ShowWavePopup(waveIndex));
+
         Debug.Log($"🚀 Memulai wave {waveIndex}");
         waveActive = true;
         waitingForNextWave = false;
@@ -163,7 +184,6 @@ public class LevelController : MonoBehaviour
         if (currentWaveIndex >= waves.Count)
         {
             Debug.Log("✅ Semua wave selesai! Menunggu musuh terakhir dihancurkan...");
-
             yield return new WaitForSeconds(delayBeforeBoss);
             activeEnemies.Clear(); // optional backup
 
@@ -220,6 +240,63 @@ public class LevelController : MonoBehaviour
         }
 
         yield return StartCoroutine(StartWave(currentWaveIndex));
+    }
+
+    /// <summary>
+    /// Menampilkan popup informasi wave untuk sementara dengan efek fade.
+    /// </summary>
+    private IEnumerator ShowWavePopup(int waveIndex)
+    {
+        // Set teks dan aktifkan objek
+        waveInfoText.text = GetWaveMessage(waveIndex);
+        waveInfoText.gameObject.SetActive(true);
+
+        // Efek fade-in
+        Color originalColor = waveInfoText.color;
+        waveInfoText.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0);
+        float fadeInTime = 0.5f;
+        for (float t = 0; t < fadeInTime; t += Time.unscaledDeltaTime)
+        {
+            waveInfoText.color = new Color(originalColor.r, originalColor.g, originalColor.b, t / fadeInTime);
+            yield return null;
+        }
+        waveInfoText.color = originalColor;
+
+        // Tunggu selama durasi yang ditentukan
+        yield return new WaitForSeconds(wavePopupDuration);
+
+        // Efek fade-out
+        float fadeOutTime = 0.5f;
+        for (float t = 0; t < fadeOutTime; t += Time.unscaledDeltaTime)
+        {
+            waveInfoText.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1 - (t / fadeOutTime));
+            yield return null;
+        }
+
+        // Sembunyikan popup dan reset warna untuk penggunaan selanjutnya
+        waveInfoText.gameObject.SetActive(false);
+        waveInfoText.color = originalColor;
+    }
+
+    /// <summary>
+    /// Membuat pesan yang akan ditampilkan pada wave popup.
+    /// </summary>
+    private string GetWaveMessage(int waveIndex)
+    {
+        string levelText = $"LEVEL {currentLevel}";
+        string waveText = $"WAVE {waveIndex + 1}";
+        string description = "";
+
+        if (waveMessages != null && waveIndex < waveMessages.Length && !string.IsNullOrEmpty(waveMessages[waveIndex]))
+        {
+            description = waveMessages[waveIndex];
+        }
+        else
+        {
+            description = "ENEMY APPROACHING";
+        }
+
+        return $"{levelText}\n{waveText} {description}";
     }
 
     public void OnBossDefeated()
@@ -329,5 +406,42 @@ public class LevelController : MonoBehaviour
             Debug.Log($"👋 Enemy {gameObject.name} menjadi invisible, dihancurkan.");
             Destroy(gameObject);
         }
+    }
+
+    /// <summary>
+    /// Membuat objek TextMeshPro untuk wave info secara otomatis jika tidak di-assign di Inspector.
+    /// </summary>
+    private void CreateWaveInfoText()
+    {
+        // 1. Cari Canvas yang ada di scene.
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogError("Tidak dapat membuat Wave Info Text secara otomatis karena tidak ada Canvas di scene.", this);
+            return;
+        }
+
+        // 2. Buat GameObject baru untuk teks.
+        GameObject textObject = new GameObject("WaveInfoText_AutoCreated");
+        textObject.transform.SetParent(canvas.transform, false); // Set parent ke canvas.
+
+        // 3. Tambahkan dan konfigurasikan komponen TextMeshProUGUI.
+        waveInfoText = textObject.AddComponent<TextMeshProUGUI>();
+        waveInfoText.text = ""; // Teks awal kosong.
+        waveInfoText.fontSize = 48;
+        waveInfoText.fontStyle = FontStyles.Bold;
+        waveInfoText.alignment = TextAlignmentOptions.Center;
+        waveInfoText.color = Color.white;
+
+        // 4. Atur posisi dan ukuran menggunakan RectTransform.
+        RectTransform rectTransform = textObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f); // Anchor ke tengah
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);     // Pivot di tengah
+        rectTransform.anchoredPosition = new Vector2(0, 0);   // Posisi di tengah anchor (center-middle)
+        rectTransform.sizeDelta = new Vector2(600, 150); // Lebar 600px, tinggi 150px (untuk mengakomodasi 2 baris teks)
+
+        // Sembunyikan di awal.
+        waveInfoText.gameObject.SetActive(false);
     }
 }
