@@ -184,4 +184,10 @@ public class SimpleCrystalShard : MonoBehaviour
             moveSpeed = speed;
         }
     }
+    
+    public void SetDamage(int newDamage)
+    {
+        damage = newDamage;
+        Debug.Log($"💥 Crystal Shard damage set to: {damage}");
+    }
 }
