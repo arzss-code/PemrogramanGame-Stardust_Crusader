@@ -505,6 +505,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BossShield
       objectReference: {fileID: 0}
+    - target: {fileID: 5765851869026270111, guid: e57512d6b5372574fbad7cac0638c444, type: 3}
+      propertyPath: regenDelay
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4794185801047678303, guid: e57512d6b5372574fbad7cac0638c444, type: 3}
     m_RemovedGameObjects: []

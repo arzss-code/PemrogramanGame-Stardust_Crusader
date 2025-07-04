@@ -103,3 +103,5 @@ MonoBehaviour:
   blinkDuration: 1
   blinkInterval: 0.15
   shieldVisual: {fileID: 4794185801047678300}
+  bossShieldSlider: {fileID: 0}
+  bossShieldText: {fileID: 0}
