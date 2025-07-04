@@ -187,7 +187,7 @@ public class Boss3Controller : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("bullets"))
+        if (other.CompareTag("bullet"))
         {
             TakeDamage(1);
             Destroy(other.gameObject);
