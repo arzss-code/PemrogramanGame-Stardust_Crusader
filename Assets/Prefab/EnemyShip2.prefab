@@ -286,12 +286,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9976a58c773f5dc4baea0286a0ae5899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  formationPositionOffset: {x: -5, y: 0}
-  waitDuration: 1
+  formationPositionOffset: {x: -5, y: 2}
+  waitDuration: 0.5
   chargeSpeed: 30
-  moveSpeed: 8
+  moveSpeed: 12
   destroyXThreshold: -60
-  entrySpeed: 30
+  entrySpeed: 35
   colliderDelay: 1
   maxHealth: 3
   scoreValue: 100
