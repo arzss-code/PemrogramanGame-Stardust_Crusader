@@ -35,6 +35,16 @@ public class LevelController : MonoBehaviour
     [SerializeField] private Slider bossHealthSlider;
     [SerializeField] private TextMeshProUGUI bossHealthText;
 
+    // 🔽 Tambahan baru untuk Shield
+    [SerializeField] private Slider bossShieldSlider;
+    [SerializeField] private TextMeshProUGUI bossShieldText;
+
+    public Slider BossHealthSlider => bossHealthSlider;
+    public TextMeshProUGUI BossHealthText => bossHealthText;
+    public Slider BossShieldSlider => bossShieldSlider;
+    public TextMeshProUGUI BossShieldText => bossShieldText;
+
+
     [Header("Audio")]
     [Tooltip("Musik latar yang diputar selama wave musuh biasa.")]
     [SerializeField] private AudioClip levelBGM;
@@ -63,6 +73,12 @@ public class LevelController : MonoBehaviour
         // Sembunyikan BossHealthBar di awal
         if (bossHealthSlider != null)
             bossHealthSlider.gameObject.SetActive(false);
+
+        if (bossShieldSlider != null)
+            bossShieldSlider.gameObject.SetActive(false);
+
+        if (bossShieldText != null)
+            bossShieldText.gameObject.SetActive(false);
     }
 
     private void Start()

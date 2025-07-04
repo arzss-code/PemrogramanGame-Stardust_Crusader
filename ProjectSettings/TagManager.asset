@@ -12,6 +12,7 @@ TagManager:
   - enemy
   - enemyBullet
   - EnemyShield
+  - EnemyBattleArea
   layers:
   - Default
   - TransparentFX
@@ -25,7 +26,7 @@ TagManager:
   - bullet
   - Boss
   - Enemy
-  - 
+  - EnemyBattleArea
   - 
   - 
   - 

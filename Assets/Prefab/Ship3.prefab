@@ -137,12 +137,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d991f1c5780586e478ca4f14061b75c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 15
   zigzagAmplitude: 7
   zigzagFrequency: 2
   weapon: {fileID: 4490612394306261960}
   shootInterval: 3
   battleArea: {fileID: 0}
+  entryOffsetX: 1
   maxHealth: 3
   flashMaterial: {fileID: 2100000, guid: 66c05badf9b986a4cb9fdab6ecd5aad8, type: 2}
   flashDuration: 0.2
@@ -203,7 +204,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
