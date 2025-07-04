@@ -250,7 +250,18 @@ public class LevelController : MonoBehaviour
 
             if (winPanelPrefab != null)
             {
-                Instantiate(winPanelPrefab);
+                Debug.Log($"Instantiate Win Panel: {winPanelPrefab.name}");
+                GameObject panelInstance;
+                Canvas mainCanvas = Object.FindFirstObjectByType<Canvas>();
+                if (mainCanvas != null && winPanelPrefab.GetComponent<Canvas>() == null)
+                {
+                    panelInstance = Instantiate(winPanelPrefab, mainCanvas.transform);
+                }
+                else
+                {
+                    panelInstance = Instantiate(winPanelPrefab);
+                }
+                panelInstance.SetActive(true);
                 // Jeda game dan musik
                 Time.timeScale = 0f;
                 if (AudioManager.instance != null && AudioManager.instance.bgmSource.isPlaying)

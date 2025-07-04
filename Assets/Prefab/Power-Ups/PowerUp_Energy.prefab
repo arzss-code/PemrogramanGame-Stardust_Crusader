@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 8288421625071791042}
   - component: {fileID: 5111247701717175516}
   - component: {fileID: 236353182089412673}
-  m_Layer: 0
+  - component: {fileID: 2532426503784702206}
+  - component: {fileID: 8488225221651002211}
+  m_Layer: 13
   m_Name: PowerUp_Energy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,6 +106,7 @@ MonoBehaviour:
   type: 2
   value: 20
   pickupEffect: {fileID: 0}
+  scoreValue: 50
 --- !u!61 &236353182089412673
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -150,6 +153,32 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.5555269, y: 3.8537529}
   m_EdgeRadius: 0
+--- !u!210 &2532426503784702206
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495854542567655959}
+  m_Enabled: 1
+  m_SortingLayerID: 947247713
+  m_SortingLayer: 7
+  m_SortingOrder: 5
+  m_SortAtRoot: 0
+--- !u!114 &8488225221651002211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495854542567655959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed98d261948aadb4ea12c00f93a048a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  destroyX: -57
 --- !u!1001 &2860904348935685444
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -161,6 +190,10 @@ PrefabInstance:
     - target: {fileID: 5773399876510048641, guid: 84221c5d9e2cf0b488ddb37026596b45, type: 3}
       propertyPath: m_Name
       value: PowerUp_Sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 5773399876510048641, guid: 84221c5d9e2cf0b488ddb37026596b45, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 5773399876510048669, guid: 84221c5d9e2cf0b488ddb37026596b45, type: 3}
       propertyPath: m_RootOrder

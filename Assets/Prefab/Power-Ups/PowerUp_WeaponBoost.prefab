@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 960718757264017055}
   - component: {fileID: 1078626608447201935}
   - component: {fileID: 8737737847143066077}
-  m_Layer: 0
+  - component: {fileID: 5311318020204168713}
+  - component: {fileID: 8921106689845951}
+  m_Layer: 13
   m_Name: PowerUp_WeaponBoost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,6 +106,7 @@ MonoBehaviour:
   type: 0
   value: 10
   pickupEffect: {fileID: 0}
+  scoreValue: 50
 --- !u!61 &8737737847143066077
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -150,6 +153,32 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3.752006, y: 4}
   m_EdgeRadius: 0
+--- !u!210 &5311318020204168713
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609426563364382538}
+  m_Enabled: 1
+  m_SortingLayerID: 947247713
+  m_SortingLayer: 7
+  m_SortingOrder: 5
+  m_SortAtRoot: 0
+--- !u!114 &8921106689845951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609426563364382538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed98d261948aadb4ea12c00f93a048a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  destroyX: -57
 --- !u!1001 &6986304714220946868
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -161,6 +190,10 @@ PrefabInstance:
     - target: {fileID: 5773399876510048641, guid: 84221c5d9e2cf0b488ddb37026596b45, type: 3}
       propertyPath: m_Name
       value: PowerUp_Sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 5773399876510048641, guid: 84221c5d9e2cf0b488ddb37026596b45, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 5773399876510048669, guid: 84221c5d9e2cf0b488ddb37026596b45, type: 3}
       propertyPath: m_RootOrder

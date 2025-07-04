@@ -140,13 +140,23 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mouseDelta = (Vector2)mousePosition - (Vector2)lastMouseWorldPos;
-        float mouseSpeed = mouseDelta.magnitude / Time.deltaTime;
+        float mouseSpeed = 0f;
+        if (Time.deltaTime > 0f)
+        {
+            mouseSpeed = mouseDelta.magnitude / Time.deltaTime;
+        }
 
         Vector2 direction = (mousePosition - (Vector2)transform.position).normalized;
 
         float minSpeed = moveSpeed;
         float maxSpeed = boostSpeed;
         float targetSpeed = Mathf.Clamp(mouseSpeed, minSpeed, maxSpeed);
+
+        // Prevent NaN assignment
+        if (float.IsNaN(direction.x) || float.IsNaN(direction.y) || float.IsNaN(targetSpeed))
+        {
+            return;
+        }
 
         rb.linearVelocity = direction * targetSpeed;
         moveInput = direction;
