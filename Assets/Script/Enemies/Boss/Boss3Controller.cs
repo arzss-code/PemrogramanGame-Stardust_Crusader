@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
+using UnityEngine.UI;
 
-public class Boss3Controller : MonoBehaviour
+public class Boss3Controller : MonoBehaviour, IDamageable
 {
-    private enum State { Entering, Attacking }
+    private enum State { Entering, Attacking, Dying }
     private State currentState = State.Entering;
     [SerializeField] private BossRegenShield regenShield;
 
@@ -11,6 +13,8 @@ public class Boss3Controller : MonoBehaviour
     [Header("Movement")]
     public float entrySpeed = 3f;
     public float entryTargetX = 12f;
+    public float patrolSpeed = 2f;
+    public float patrolDistance = 3f;
 
     [Header("Battle Area")]
     public BoxCollider2D battleArea;
@@ -25,20 +29,33 @@ public class Boss3Controller : MonoBehaviour
     [SerializeField] private int maxHP = 20;
     private int currentHP;
 
+    [Header("Effects")]
+    [SerializeField] private GameObject destructionEffect;
+
     [Header("Flash Effect")]
     [SerializeField] private Material whiteMaterial;
     private Material defaultMaterial;
     private SpriteRenderer spriteRenderer;
     [SerializeField] private float flashDuration = 0.1f;
 
+    // UI References (set by Initializer)
+    private Slider bossHealthSlider;
+    private TextMeshProUGUI bossHealthText;
+    private Slider bossShieldSlider;
+    private TextMeshProUGUI bossShieldText;
+
     private float attackTimer = 0f;
     private int currentPattern = 0;
     private Coroutine spiralCoroutine;
+    private bool isDying = false;
+    private Vector2 initialPosition;
+    private Vector2 minBounds;
+    private Vector2 maxBounds;
 
-    private void Start()
+    private void Awake()
     {
         currentHP = maxHP;
-
+        // Get internal components
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
@@ -50,42 +67,62 @@ public class Boss3Controller : MonoBehaviour
             entryTargetX = battleArea.bounds.max.x - 1f; // masuk sedikit ke dalam BattleArea
         }
 
-        // Aktifkan UI HP dan Shield saat Boss muncul
-        if (LevelController.Instance != null)
-        {
-            if (LevelController.Instance.BossShieldSlider != null)
-                LevelController.Instance.BossShieldSlider.gameObject.SetActive(true);
-
-            if (LevelController.Instance.BossShieldText != null)
-                LevelController.Instance.BossShieldText.gameObject.SetActive(true);
-
-            if (LevelController.Instance.BossHealthSlider != null)
-                LevelController.Instance.BossHealthSlider.gameObject.SetActive(true);
-
-            if (LevelController.Instance.BossHealthText != null)
-                LevelController.Instance.BossHealthText.gameObject.SetActive(true);
-
-            LevelController.Instance.BossHealthSlider.maxValue = maxHP;
-            LevelController.Instance.BossHealthSlider.value = currentHP;
-            LevelController.Instance.BossHealthText.text = currentHP.ToString();
-        }
     }
 
+    public void Initialize(BoxCollider2D newBattleArea, Slider healthSlider, TextMeshProUGUI healthText, Slider shieldSlider, TextMeshProUGUI shieldText)
+    {
+        this.battleArea = newBattleArea;
+        this.bossHealthSlider = healthSlider;
+        this.bossHealthText = healthText;
+        this.bossShieldSlider = shieldSlider;
+        this.bossShieldText = shieldText;
+
+        if (this.battleArea != null)
+        {
+            entryTargetX = battleArea.bounds.max.x - 1f;
+            minBounds = battleArea.bounds.min;
+            maxBounds = battleArea.bounds.max;
+        }
+        else
+        {
+            Debug.LogError("Boss3 di-spawn tanpa Battle Area! AI tidak akan berjalan.", this.gameObject);
+            return;
+        }
+
+        // Pass UI references to the shield component
+        if (regenShield != null)
+        {
+            regenShield.bossShieldSlider = this.bossShieldSlider;
+            regenShield.bossShieldText = this.bossShieldText;
+        }
+
+        InitUI();
+        StartBehavior();
+    }
+
+    private void StartBehavior()
+    {
+        // State machine starts automatically, this is just for consistency
+        Debug.Log("Boss 3 behavior started.");
+    }
     private void Update()
     {
+        if (isDying) return;
         switch (currentState)
         {
             case State.Entering:
                 MoveIntoScreen();
                 break;
-
             case State.Attacking:
+                HandlePatrolMovement();
                 attackTimer += Time.deltaTime;
                 if (attackTimer >= attackInterval)
                 {
                     attackTimer = 0f;
                     PerformAttack();
                 }
+                break;
+            case State.Dying:
                 break;
         }
     }
@@ -98,6 +135,7 @@ public class Boss3Controller : MonoBehaviour
         {
             transform.position = new Vector3(entryTargetX, transform.position.y, transform.position.z);
             currentState = State.Attacking;
+            initialPosition = transform.position;
             Debug.Log("🎯 Boss3 memasuki layar dan mulai menyerang!");
         }
     }
@@ -125,37 +163,25 @@ public class Boss3Controller : MonoBehaviour
     {
         if (laserSpiral != null)
         {
-            laserSpiral.enabled = true;
+            laserSpiral.StartFiring();
             yield return new WaitForSeconds(spiralAttackDuration);
-            laserSpiral.enabled = false;
+            laserSpiral.StopFiring();
         }
 
         spiralCoroutine = null;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damageAmount)
     {
-        // Jika shield aktif, serap damage dulu
-        if (regenShield != null && regenShield.IsActive())
-        {
-            int remaining = regenShield.AbsorbDamage(damage);
-            if (remaining <= 0)
-            {
-                StartCoroutine(FlashEffect()); // Tetap kasih efek flash saat shield aktif
-                return;
-            }
-            damage = remaining; // Damage sisa masuk ke Boss HP
-        }
-
-        currentHP -= damage;
+        if (isDying) return;
+ 
+        // Logika shield sekarang ditangani oleh LaserBullets.cs.
+        // Metode ini hanya akan dipanggil dengan sisa damage jika shield sudah ditembus,
+        // atau damage penuh jika shield tidak aktif.
+        currentHP -= damageAmount;
         if (currentHP < 0) currentHP = 0;
 
-        if (LevelController.Instance != null && LevelController.Instance.BossHealthSlider != null)
-        {
-            LevelController.Instance.BossHealthSlider.value = currentHP;
-            LevelController.Instance.BossHealthText.text = currentHP.ToString();
-        }
-
+        UpdateHealthUI();
         StartCoroutine(FlashEffect());
 
         if (currentHP <= 0)
@@ -177,21 +203,81 @@ public class Boss3Controller : MonoBehaviour
 
     private void Die()
     {
+        isDying = true;
+        currentState = State.Dying;
         Debug.Log("💀 Boss3 telah dikalahkan!");
-        if (LevelController.Instance != null)
+
+        // Stop all attacks
+        if (spiralCoroutine != null)
         {
-            LevelController.Instance.OnBossDefeated();
+            StopCoroutine(spiralCoroutine);
+            laserSpiral?.StopFiring();
         }
-        Destroy(gameObject);
+
+        // Destruction effect
+        if (destructionEffect != null)
+        {
+            Instantiate(destructionEffect, transform.position, Quaternion.identity);
+        }
+
+        // Hide UI
+        if (bossHealthSlider != null) bossHealthSlider.gameObject.SetActive(false);
+        if (bossHealthText != null) bossHealthText.gameObject.SetActive(false);
+        if (bossShieldSlider != null) bossShieldSlider.gameObject.SetActive(false);
+        if (bossShieldText != null) bossShieldText.gameObject.SetActive(false);
+
+        // Notify LevelController
+        LevelController.Instance?.OnBossDefeated();
+
+        // Destroy the boss object
+        Destroy(gameObject, 0.2f);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void InitUI()
     {
-        if (other.CompareTag("bullet"))
+        if (bossHealthSlider != null)
         {
-            TakeDamage(1);
-            Destroy(other.gameObject);
+            bossHealthSlider.gameObject.SetActive(true);
+            bossHealthSlider.maxValue = maxHP;
+            bossHealthSlider.value = currentHP;
+        }
+        if (bossHealthText != null)
+        {
+            bossHealthText.gameObject.SetActive(true);
+            bossHealthText.text = $"{currentHP} / {maxHP}";
+        }
+
+        // Shield UI is handled by BossRegenShield, but we ensure it's active
+        if (bossShieldSlider != null) bossShieldSlider.gameObject.SetActive(true);
+        if (bossShieldText != null) bossShieldText.gameObject.SetActive(true);
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (bossHealthSlider != null)
+        {
+            bossHealthSlider.value = currentHP;
+        }
+        if (bossHealthText != null)
+        {
+            bossHealthText.text = $"{currentHP} / {maxHP}";
         }
     }
 
+    // This is no longer needed as LaserBullets will call TakeDamage via IDamageable
+    // private void OnTriggerEnter2D(Collider2D other) { ... }
+
+    private void HandlePatrolMovement()
+    {
+        // Gerakan sinusoidal (naik-turun) pada sumbu Y
+        float newY = initialPosition.y + Mathf.Sin(Time.time * patrolSpeed) * patrolDistance;
+
+        // Batasi pergerakan agar tetap di dalam battleArea
+        if (battleArea != null)
+        {
+            newY = Mathf.Clamp(newY, minBounds.y, maxBounds.y);
+        }
+
+        transform.position = new Vector2(initialPosition.x, newY);
+    }
 }

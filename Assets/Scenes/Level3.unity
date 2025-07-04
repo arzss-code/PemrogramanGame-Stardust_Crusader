@@ -361,7 +361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sfxSource: {fileID: 0}
-  bgmSource: {fileID: 0}
+  bgmSource: {fileID: 256493082}
   mainMenuBGM: {fileID: 8300000, guid: 4746c5a27e3ff1749b06b8c252b7147a, type: 3}
   buttonClickSFX: {fileID: 0}
 --- !u!82 &256493082
@@ -6377,6 +6377,15 @@ MonoBehaviour:
     initialDelay: 5
   spawn1: {fileID: 712115292}
   spawn2: {fileID: 575774873}
+  wavePopupPrefab: {fileID: 0}
+  wavePopupCanvas: {fileID: 0}
+  popupDisplayDuration: 2
+  currentLevel: 1
+  waveMessages:
+  - INCOMING HOSTILES
+  - ENEMY REINFORCEMENTS
+  - HEAVY ASSAULT
+  - PREPARE FOR BATTLE
   delayBeforeEnemyWave: 20
   delayBeforeBoss: 10
   bossPrefab: {fileID: 7855420043618906113, guid: 6353672a92da74a459cfada5a50cca01, type: 3}

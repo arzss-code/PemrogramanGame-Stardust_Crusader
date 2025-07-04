@@ -7,6 +7,7 @@ public class Boss3LaserSpread : MonoBehaviour
     [SerializeField] private float bulletSpeed = 10f;
     [SerializeField] private int bulletCount = 5;
     [SerializeField] private float spreadAngle = 40f;
+    [SerializeField] private int bulletDamage = 1;
 
     public void Shoot()
     {
@@ -23,7 +24,7 @@ public class Boss3LaserSpread : MonoBehaviour
             Boss3Bullets bulletScript = bullet.GetComponent<Boss3Bullets>();
             if (bulletScript != null)
             {
-                bulletScript.Initialize(direction, bulletSpeed);
+                bulletScript.Initialize(direction, bulletSpeed, bulletDamage);
             }
         }
     }

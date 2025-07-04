@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EnemyShield : MonoBehaviour
+public class EnemyShield : MonoBehaviour, IShield
 {
     public int shieldHealth = 2;
 

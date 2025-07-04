@@ -31,9 +31,12 @@ public class LaserBullets : MonoBehaviour
             return;
         }
 
-        EnemyShield shield = other.GetComponent<EnemyShield>();
+        // REFAKTOR: Cek apakah objek yang ditabrak memiliki komponen shield (apapun jenisnya)
+        // dengan mencari antarmuka IShield. Ini akan bekerja untuk EnemyShield dan BossRegenShield.
+        IShield shield = other.GetComponent<IShield>();
         if (shield != null)
         {
+            // Shield akan menyerap damage. Sisa damage (jika ada) akan diteruskan.
             int remainingDamage = shield.AbsorbDamage((int)this.bulletDamage);
             if (remainingDamage > 0)
             {

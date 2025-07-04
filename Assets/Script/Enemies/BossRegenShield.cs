@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 
-public class BossRegenShield : MonoBehaviour
+public class BossRegenShield : MonoBehaviour, IShield
 {
     [Header("Shield Settings")]
     public int maxShieldHealth = 5;
@@ -18,6 +18,11 @@ public class BossRegenShield : MonoBehaviour
     public GameObject shieldVisual; // child GameObject berisi SpriteRenderer
     private Collider2D shieldCollider;
     private SpriteRenderer shieldRenderer;
+
+    [Header("Effects")]
+    [SerializeField] private Color flashColor = Color.cyan;
+    private Color originalColor;
+    [SerializeField] private float flashDuration = 0.1f;
 
     [Header("UI")]
     public Slider bossShieldSlider;
@@ -34,11 +39,21 @@ public class BossRegenShield : MonoBehaviour
         shieldCollider = GetComponent<Collider2D>();
         shieldRenderer = shieldVisual.GetComponent<SpriteRenderer>();
 
+        if (shieldRenderer != null)
+        {
+            originalColor = shieldRenderer.color;
+        }
+
         UpdateShieldUI();
     }
 
     public int AbsorbDamage(int damage)
     {
+        if (currentShieldHealth <= 0) return damage;
+
+        // Efek visual saat shield terkena damage
+        if (gameObject.activeInHierarchy) StartCoroutine(FlashEffect());
+
         int absorbed = Mathf.Min(currentShieldHealth, damage);
         currentShieldHealth -= absorbed;
         UpdateShieldUI();
@@ -95,6 +110,16 @@ public class BossRegenShield : MonoBehaviour
         }
 
         shieldRenderer.enabled = true; // pastikan terlihat
+    }
+
+    private IEnumerator FlashEffect()
+    {
+        if (shieldRenderer == null) yield break;
+
+        shieldRenderer.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+        if (shieldRenderer != null) // Cek lagi jika shield dinonaktifkan saat flash
+            shieldRenderer.color = originalColor;
     }
 
     private void UpdateShieldUI()
