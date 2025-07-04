@@ -6335,7 +6335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sfxSource: {fileID: 0}
-  bgmSource: {fileID: 0}
+  bgmSource: {fileID: 772449195}
   mainMenuBGM: {fileID: 8300000, guid: 4746c5a27e3ff1749b06b8c252b7147a, type: 3}
   buttonClickSFX: {fileID: 0}
 --- !u!4 &841514687 stripped
@@ -6919,6 +6919,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1887398618}
     m_Modifications:
+    - target: {fileID: 791745481344131198, guid: 0013440e82322864dbef0c36a3254d11, type: 3}
+      propertyPath: m_Transition
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5059581168182126333, guid: 0013440e82322864dbef0c36a3254d11, type: 3}
       propertyPath: m_Name
       value: BossHealthBar (1)
