@@ -105,20 +105,9 @@ public class Boss2Controller : MonoBehaviour, IDamageable
 
     private void Start()
     {
-
-
-        if (bossHealthSlider != null)
-        {
-            bossHealthSlider.gameObject.SetActive(false);
-        }
-
-        if (battleArea != null)
-        {
-            Bounds bounds = battleArea.bounds;
-            minBounds = bounds.min;
-            maxBounds = bounds.max;
-        }
-
+        // Logika inisialisasi utama telah dipindahkan ke Initialize().
+        // Start() sengaja dikosongkan untuk menghindari konflik eksekusi
+        // dengan Initialize() yang dipanggil dari luar (LevelController/BossTestInitializer).
     }
 
     public void Initialize(BoxCollider2D area, Slider healthSlider, TextMeshProUGUI healthText)
@@ -623,6 +612,7 @@ public class Boss2Controller : MonoBehaviour, IDamageable
 
         if (bossHealthText != null)
         {
+            bossHealthText.gameObject.SetActive(true);
             bossHealthText.text = $"{currentHealth} / {maxHealth}";
         }
     }
